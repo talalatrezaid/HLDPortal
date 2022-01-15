@@ -1,0 +1,190 @@
+Array
+(
+    [id] => 7474423922929
+    [title] => Classic Varsity Top
+    [body_html] => <p>Womens casual varsity top, This grey and black buttoned top is a sport-inspired piece complete with an embroidered letter.</p>
+    [vendor] => partners-demo
+    [product_type] => 
+    [created_at] => 2021-11-26T14:24:06+05:00
+    [handle] => classic-varsity-top
+    [updated_at] => 2021-12-29T10:42:57+05:00
+    [published_at] => 2021-11-26T14:24:05+05:00
+    [template_suffix] => 
+    [status] => active
+    [published_scope] => web
+    [tags] => women
+    [translations] => Array
+        (
+        )
+
+    [admin_graphql_api_id] => gid://shopify/Product/7474423922929
+    [variants] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 42122417307889
+                    [product_id] => 7474423922929
+                    [title] => Small
+                    [price] => 60.00
+                    [sku] => 
+                    [position] => 1
+                    [inventory_policy] => deny
+                    [compare_at_price] => 
+                    [fulfillment_service] => manual
+                    [inventory_management] => shopify
+                    [option1] => Small
+                    [option2] => 
+                    [option3] => 
+                    [created_at] => 2021-11-26T14:24:06+05:00
+                    [updated_at] => 2021-12-29T10:42:57+05:00
+                    [taxable] => 1
+                    [barcode] => 
+                    [grams] => 0
+                    [image_id] => 
+                    [weight] => 0
+                    [weight_unit] => kg
+                    [inventory_item_id] => 44216417059057
+                    [inventory_quantity] => 48
+                    [old_inventory_quantity] => 48
+                    [requires_shipping] => 1
+                    [translations] => Array
+                        (
+                        )
+
+                    [admin_graphql_api_id] => gid://shopify/ProductVariant/42122417307889
+                )
+
+            [1] => Array
+                (
+                    [id] => 42122417340657
+                    [product_id] => 7474423922929
+                    [title] => Medium
+                    [price] => 60.00
+                    [sku] => 
+                    [position] => 2
+                    [inventory_policy] => deny
+                    [compare_at_price] => 
+                    [fulfillment_service] => manual
+                    [inventory_management] => shopify
+                    [option1] => Medium
+                    [option2] => 
+                    [option3] => 
+                    [created_at] => 2021-11-26T14:24:06+05:00
+                    [updated_at] => 2021-12-23T11:16:41+05:00
+                    [taxable] => 1
+                    [barcode] => 
+                    [grams] => 0
+                    [image_id] => 
+                    [weight] => 0
+                    [weight_unit] => kg
+                    [inventory_item_id] => 44216417091825
+                    [inventory_quantity] => 60
+                    [old_inventory_quantity] => 60
+                    [requires_shipping] => 1
+                    [translations] => Array
+                        (
+                        )
+
+                    [admin_graphql_api_id] => gid://shopify/ProductVariant/42122417340657
+                )
+
+            [2] => Array
+                (
+                    [id] => 42122417373425
+                    [product_id] => 7474423922929
+                    [title] => Large
+                    [price] => 60.00
+                    [sku] => 
+                    [position] => 3
+                    [inventory_policy] => deny
+                    [compare_at_price] => 
+                    [fulfillment_service] => manual
+                    [inventory_management] => shopify
+                    [option1] => Large
+                    [option2] => 
+                    [option3] => 
+                    [created_at] => 2021-11-26T14:24:06+05:00
+                    [updated_at] => 2021-12-23T11:16:44+05:00
+                    [taxable] => 1
+                    [barcode] => 
+                    [grams] => 0
+                    [image_id] => 
+                    [weight] => 0
+                    [weight_unit] => kg
+                    [inventory_item_id] => 44216417124593
+                    [inventory_quantity] => 40
+                    [old_inventory_quantity] => 40
+                    [requires_shipping] => 1
+                    [translations] => Array
+                        (
+                        )
+
+                    [admin_graphql_api_id] => gid://shopify/ProductVariant/42122417373425
+                )
+
+        )
+
+    [options] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 9507951280369
+                    [product_id] => 7474423922929
+                    [name] => Size
+                    [position] => 1
+                    [values] => Array
+                        (
+                            [0] => Small
+                            [1] => Medium
+                            [2] => Large
+                        )
+
+                    [translations] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+    [images] => Array
+        (
+            [0] => Array
+                (
+                    [id] => 36201431335153
+                    [product_id] => 7474423922929
+                    [position] => 1
+                    [created_at] => 2021-11-26T14:24:06+05:00
+                    [updated_at] => 2021-11-26T14:24:06+05:00
+                    [alt] => 
+                    [width] => 925
+                    [height] => 617
+                    [src] => https://cdn.shopify.com/s/files/1/0607/4672/7665/products/casual-fashion-woman_925x_84490f94-be78-4a35-9336-ea1ba52a923a.jpg?v=1637918646
+                    [variant_ids] => Array
+                        (
+                        )
+
+                    [admin_graphql_api_id] => gid://shopify/ProductImage/36201431335153
+                )
+
+        )
+
+    [image] => Array
+        (
+            [id] => 36201431335153
+            [product_id] => 7474423922929
+            [position] => 1
+            [created_at] => 2021-11-26T14:24:06+05:00
+            [updated_at] => 2021-11-26T14:24:06+05:00
+            [alt] => 
+            [width] => 925
+            [height] => 617
+            [src] => https://cdn.shopify.com/s/files/1/0607/4672/7665/products/casual-fashion-woman_925x_84490f94-be78-4a35-9336-ea1ba52a923a.jpg?v=1637918646
+            [variant_ids] => Array
+                (
+                )
+
+            [admin_graphql_api_id] => gid://shopify/ProductImage/36201431335153
+        )
+
+)
