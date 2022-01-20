@@ -151,6 +151,7 @@ class ProductController extends Controller
         $products = json_decode($response->body(), true);
 
         // check if products array has some data
+
         if ($products) {
 
             // call method to insert data in products DB table

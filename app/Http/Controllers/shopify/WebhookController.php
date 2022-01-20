@@ -269,9 +269,8 @@ class WebhookController extends Controller
             // call method to update information in DB
             $res = $this->updateCategoryWebhook($hmac_header_domain, $data_array);
             error_log("Category Update response: " . $res);
-        }
-        // if event is collections/delete
-        elseif ($hmac_header_topic == 'collections/delete') {
+            // if event is collections/delete
+        } elseif ($hmac_header_topic == 'collections/delete') {
 
             // convert json payload to array
             $data_array = json_decode($data, true);
@@ -284,16 +283,13 @@ class WebhookController extends Controller
             // call method to delete category information from DB
             $res = $this->deleteCategoryWebhook($hmac_header_domain, $data_array);
             error_log("Category Update response: " . $res);
-        }
-        // if event is orders/delete
-        else if ($hmac_header_topic == 'orders/delete') {
+            // if event is orders/delete
+        } else if ($hmac_header_topic == 'orders/delete') {
             // there are many scenarios for order delete also 
             //if only shopify order
             // if holy land date and shopify order
             // if product assignment order
-        }
-        // if event is orders/create
-        else if ($hmac_header_topic == 'orders/create') {
+        } else if ($hmac_header_topic == 'orders/create') {
 
             // convert json payload to array
             $data_array = json_decode($data, true);
@@ -307,16 +303,14 @@ class WebhookController extends Controller
             // discount details
             // refund details
             // order cancellation 
-            Log::info(array("Hook Excecuted" => 'orders/create'));
-            Log::info($data);
+            Log::info(array("Hook Excecuted" => 'orders/create new once'));
+            //    Log::info($data);
             // parameters domain,  order array , charity_id
             // call method to add information in DB
             $res = $this->createOrder($hmac_header_domain, $data_array, 0);
             error_log("Product Add response: " . $res);
-        }
-        // if event is orders/update
-        else if ($hmac_header_topic == 'orders/update' || $hmac_header_topic == 'orders/fulfilled') {
-
+        } else if (trim($hmac_header_topic) == 'orders/updated' || $hmac_header_topic == 'orders/fulfilled') {
+            // if event is orders/update
             // convert json payload to array
             $data_array = json_decode($data, true);
 
@@ -330,14 +324,13 @@ class WebhookController extends Controller
             // refund details
             // order cancellation 
             Log::info(array("Hook Excecuted" => 'orders/update'));
-            Log::info($data);
+            //       Log::info($data);
             // parameters domain,  order array , charity_id
             // call method to add information in DB
             $res = $this->updateOrder($hmac_header_domain, $data_array, 0);
             error_log("Product Add response: " . $res);
-        }
-        // if event is products/create
-        else if ($hmac_header_topic == 'inventory_levels/update') {
+            // if event is products/create
+        } else if ($hmac_header_topic == 'inventory_levels/update') {
 
             Log::info(array("Hook Excecuted" => 'inventory_levels/update'));
             // convert json payload to array
@@ -380,10 +373,10 @@ class WebhookController extends Controller
                 Mail::to("informtalal@gmail.com")->send($email);
                 Log::info("product quanity updated successfully");
             }
-        }
-        // if there is any issue
-        else {
-            Log::info($data);
+        } else {
+            // if there is any issue
+            Log::info(array("comes here", "why"));
+            //$data
             // $fp = fopen('shopify_webhook_erro.txt', 'w');
             // fwrite($fp, 'Something went word with web-hook');
             // fclose($fp);
@@ -1160,9 +1153,10 @@ class WebhookController extends Controller
      */
     private function createOrder($store_domain_name, $order_data_array, $charity_id)
     {
+
         // get store_id from DB where store domain name equals to webhook's domain name
         $store_data = Store::where('api_domain', $store_domain_name)->first();
-        //    Log::info($order_data_array);
+        //  Log::info($order_data_array);
         if ($store_data) {
 
             $store_id = $store_data->id;
@@ -1172,62 +1166,62 @@ class WebhookController extends Controller
             // because this is webhook 
             // and we have main website also where we will make charity orders
             $create_order = [
-                'order_id'     => $order_data_array['id'],
+                'order_id'     => array_key_exists('id', $order_data_array) ? $order_data_array['id'] : 0,
                 'store_id'      => $store_id,
-                "cancel_reason" => $order_data_array['cancel_reason'],
-                "cancelled_at" => $order_data_array['cancelled_at'],
-                "cart_token" => $order_data_array['cart_token'],
-                "checkout_id" => $order_data_array['checkout_id'],
-                "checkout_token" => $order_data_array['checkout_token'],
-                // "client_details" => $order_data_array['client_details'],
-                "closed_at" => $order_data_array['closed_at'],
-                "confirmed" => $order_data_array['confirmed'],
-                "contact_email" => $order_data_array['contact_email'],
-                "currency" => $order_data_array['currency'],
-                "current_subtotal_price" => $order_data_array['current_subtotal_price'],
-                "current_total_discounts" => $order_data_array['current_total_discounts'],
-                "current_total_duties_set" => $order_data_array['current_total_duties_set'],
-                "current_total_price" => $order_data_array['current_total_price'],
-                "current_total_tax" => $order_data_array['current_total_tax'],
-                "email" => $order_data_array['email'],
-                "estimated_taxes" => $order_data_array['estimated_taxes'],
-                "financial_status" => $order_data_array['financial_status'],
-                "fulfillment_status" => $order_data_array['fulfillment_status'],
-                "gateway" => $order_data_array['gateway'],
-                "landing_site" => $order_data_array['landing_site'],
-                "landing_site_ref" => $order_data_array['landing_site_ref'],
-                "location_id" => $order_data_array['location_id'],
-                "name" => $order_data_array['name'],
-                "note" => $order_data_array['note'],
-                // "note_attributes" => $order_data_array['note_attributes'],
-                "number" => $order_data_array['number'],
-                "order_number" => $order_data_array['order_number'],
-                "order_status_url" => $order_data_array['order_status_url'],
-                "original_total_duties_set" => $order_data_array['original_total_duties_set'],
+                "cancel_reason" => array_key_exists('cancel_reason', $order_data_array) ? $order_data_array['cancel_reason'] : "",
+                "cancelled_at" => array_key_exists('cancelled_at', $order_data_array) ? $order_data_array['cancelled_at'] : "",
+                "cart_token" => array_key_exists('cart_token', $order_data_array) ? $order_data_array['cart_token'] : "",
+                "checkout_id" => array_key_exists('checkout_id', $order_data_array) ? $order_data_array['checkout_id'] : "",
+                "checkout_token" => array_key_exists('checkout_token', $order_data_array) ? $order_data_array['checkout_token'] : "",
+                // "client_details" => array_key_exists('client_details',$order_data_array) ? $order_data_array['client_details'] : "",
+                "closed_at" => array_key_exists('closed_at', $order_data_array) ? $order_data_array['closed_at'] : "",
+                "confirmed" => array_key_exists('confirmed', $order_data_array) ? $order_data_array['confirmed'] : "",
+                "contact_email" => array_key_exists('contact_email', $order_data_array) ? $order_data_array['contact_email'] : "",
+                "currency" => array_key_exists('currency', $order_data_array) ? $order_data_array['currency'] : "",
+                "current_subtotal_price" => array_key_exists('current_subtotal_price', $order_data_array) ? $order_data_array['current_subtotal_price'] : 0,
+                "current_total_discounts" => array_key_exists('current_total_discounts', $order_data_array) ? $order_data_array['current_total_discounts'] : "",
+                "current_total_duties_set" => array_key_exists('current_total_duties_set', $order_data_array) ? $order_data_array['current_total_duties_set'] : "",
+                "current_total_price" => array_key_exists('current_total_price', $order_data_array) ? $order_data_array['current_total_price'] : "",
+                "current_total_tax" => array_key_exists('current_total_tax', $order_data_array) ? $order_data_array['current_total_tax'] : "",
+                "email" => array_key_exists('email', $order_data_array) ? $order_data_array['email'] : "",
+                "estimated_taxes" => array_key_exists('estimated_taxes', $order_data_array) ? $order_data_array['estimated_taxes'] : "",
+                "financial_status" => array_key_exists('financial_status', $order_data_array) ? $order_data_array['financial_status'] : "",
+                "fulfillment_status" => array_key_exists('fulfillment_status', $order_data_array) ? $order_data_array['fulfillment_status'] : "",
+                "gateway" => array_key_exists('gateway', $order_data_array) ? $order_data_array['gateway'] : "",
+                "landing_site" => array_key_exists('landing_site', $order_data_array) ? $order_data_array['landing_site'] : "",
+                "landing_site_ref" => array_key_exists('landing_site_ref', $order_data_array) ? $order_data_array['landing_site_ref'] : "",
+                "location_id" => array_key_exists('location_id', $order_data_array) ? $order_data_array['location_id'] : "",
+                "name" => array_key_exists('name', $order_data_array) ? $order_data_array['name'] : "",
+                "note" => array_key_exists('note', $order_data_array) ? $order_data_array['note'] : "",
+                // "note_attributes" => array_key_exists('note_attributes',$order_data_array) ? $order_data_array['note_attributes'] : "",
+                "number" => array_key_exists('number', $order_data_array) ? $order_data_array['number'] : "",
+                "order_number" => array_key_exists('order_number', $order_data_array) ? $order_data_array['order_number'] : "",
+                "order_status_url" => array_key_exists('order_status_url', $order_data_array) ? $order_data_array['order_status_url'] : "",
+                "original_total_duties_set" => array_key_exists('original_total_duties_set', $order_data_array) ? $order_data_array['original_total_duties_set'] : "",
                 "payment_gateway_names" => implode(",", $order_data_array['payment_gateway_names']),
-                "phone" => $order_data_array['phone'],
-                "presentment_currency" => $order_data_array['presentment_currency'],
-                "processed_at" => $order_data_array['processed_at'],
-                "processing_method" => $order_data_array['processing_method'],
-                "reference" => $order_data_array['reference'],
-                "referring_site" => $order_data_array['referring_site'],
-                "source_identifier" => $order_data_array['source_identifier'],
-                "source_name" => $order_data_array['source_name'],
-                "source_url" => $order_data_array['source_url'],
-                "subtotal_price" => $order_data_array['subtotal_price'],
-                "tags" => $order_data_array['tags'],
-                "taxes_included" => $order_data_array['taxes_included'],
-                "test" => $order_data_array['test'],
-                "token" => $order_data_array['token'],
-                "total_discounts" => $order_data_array['total_discounts'],
-                "total_line_items_price" => $order_data_array['total_line_items_price'],
-                "total_outstanding" => $order_data_array['total_outstanding'],
-                "total_price" => $order_data_array['total_price'],
-                "total_price_usd" => $order_data_array['total_price_usd'],
-                "total_tax" => $order_data_array['total_tax'],
-                "total_tip_received" => $order_data_array['total_tip_received'],
-                "total_weight" => $order_data_array['total_weight'],
-                "user_id" => $order_data_array['user_id'],
+                "phone" => array_key_exists('phone', $order_data_array) ? $order_data_array['phone'] : "",
+                "presentment_currency" => array_key_exists('presentment_currency', $order_data_array) ? $order_data_array['presentment_currency'] : "",
+                "processed_at" => array_key_exists('processed_at', $order_data_array) ? $order_data_array['processed_at'] : "",
+                "processing_method" => array_key_exists('processing_method', $order_data_array) ? $order_data_array['processing_method'] : "",
+                "reference" => array_key_exists('reference', $order_data_array) ? $order_data_array['reference'] : "",
+                "referring_site" => array_key_exists('referring_site', $order_data_array) ? $order_data_array['referring_site'] : "",
+                "source_identifier" => array_key_exists('source_identifier', $order_data_array) ? $order_data_array['source_identifier'] : "",
+                "source_name" => array_key_exists('source_name', $order_data_array) ? $order_data_array['source_name'] : "",
+                "source_url" => array_key_exists('source_url', $order_data_array) ? $order_data_array['source_url'] : "",
+                "subtotal_price" => array_key_exists('subtotal_price', $order_data_array) ? $order_data_array['subtotal_price'] : "",
+                "tags" => array_key_exists('tags', $order_data_array) ? $order_data_array['tags'] : "",
+                "taxes_included" => array_key_exists('taxes_included', $order_data_array) ? $order_data_array['taxes_included'] : "",
+                "test" => array_key_exists('test', $order_data_array) ? $order_data_array['test'] : "",
+                "token" => array_key_exists('token', $order_data_array) ? $order_data_array['token'] : "",
+                "total_discounts" => array_key_exists('total_discounts', $order_data_array) ? $order_data_array['total_discounts'] : "",
+                "total_line_items_price" => array_key_exists('total_line_items_price', $order_data_array) ? $order_data_array['total_line_items_price'] : "",
+                "total_outstanding" => array_key_exists('total_outstanding', $order_data_array) ? $order_data_array['total_outstanding'] : "",
+                "total_price" => array_key_exists('total_price', $order_data_array) ? $order_data_array['total_price'] : "",
+                "total_price_usd" => array_key_exists('total_price_usd', $order_data_array) ? $order_data_array['total_price_usd'] : "",
+                "total_tax" => array_key_exists('total_tax', $order_data_array) ? $order_data_array['total_tax'] : "",
+                "total_tip_received" => array_key_exists('total_tip_received', $order_data_array) ? $order_data_array['total_tip_received'] : "",
+                "total_weight" => array_key_exists('total_weight', $order_data_array) ? $order_data_array['total_weight'] : "",
+                "user_id" => array_key_exists('user_id', $order_data_array) ? $order_data_array['user_id'] : "",
                 "is_shopify_order" => 1,
                 "is_charity_order" => 0,
             ];
@@ -1247,28 +1241,42 @@ class WebhookController extends Controller
             $check_if_order_exists = $order->check_order_exists($order_data_array['id']);
             if ($check_if_order_exists == FALSE) {
                 //it's mean order does not exists create order and insert all the details
-                Log::info($create_order);
+                //      Log::info($create_order);
                 $neworder = Orders::create($create_order);
+                Log::info(array("order created" => "----------" . $neworder->id . "-------------"));
+
                 if ($neworder) {
                     // add billing detail
                     //params local id and billing detail
-                    if ($order_data_array['billing_address'] <> null)
-                        $this->addShopifyOrderBillingDetail($neworder->id, $order_data_array['billing_address']);
+                    if (array_key_exists('billing_address', $order_data_array)) {
+                        if ($order_data_array['billing_address'] <> null)
+                            $this->addShopifyOrderBillingDetail($neworder->id, $order_data_array['billing_address']);
+                    }
+                    Log::info(array("order billing" => "---------- created -------------"));
 
                     // add fullfilment
                     // params local id and fullfilment detail
-                    if ($order_data_array['fulfillments'] <> null)
-                        $this->addShopifyOrderFullfilmentDetail($neworder->id, $order_data_array['fulfillments']);
+                    if (array_key_exists('fulfillments', $order_data_array)) {
+                        if ($order_data_array['fulfillments'] <> null)
+                            $this->addShopifyOrderFullfilmentDetail($neworder->id, $order_data_array['fulfillments']);
+                    }
+                    Log::info(array("order fulfillments" => "---------- created -------------"));
 
                     // add products list
                     // params local id and products list
-                    if ($order_data_array['line_items'] <> null)
-                        $this->addShopifyOrderProductListDetail($neworder->id, $order_data_array['line_items']);
+
+                    if (array_key_exists('line_items', $order_data_array)) {
+                        if ($order_data_array['line_items'] <> null)
+                            $this->addShopifyOrderProductListDetail($neworder->id, $order_data_array['line_items']);
+                    }
+                    Log::info(array("order line_items" => "---------- created -------------"));
 
                     // add payment detail
                     // params local id and payment
-                    if ($order_data_array['payment_details'] <> null)
+                    if (array_key_exists('payment_details', $order_data_array))
                         $this->addShopifyOrderPaymentDetail($neworder->id, $order_data_array['payment_details']);
+
+                    Log::info(array("order payment_details" => "---------- created -------------"));
 
                     // add refunds
                     // params local id and refund details
@@ -1279,13 +1287,22 @@ class WebhookController extends Controller
                     if ($order_data_array['shipping_address'] <> null)
                         $this->addShopifyOrderShippingDetail($neworder->id, $order_data_array['shipping_address']);
 
+                    Log::info(array("order shipping_address" => "---------- created -------------"));
+
                     // add customer detail
                     // params local id and customer
-                    if ($order_data_array['customer_details'] <> null)
-                        $this->addShopifyOrderCustomerDetail($neworder->id, $order_data_array['customer_details']);
+                    if ($order_data_array['customer'] <> null) {
+                        Log::info(array("found" => "bhaifound "));
+
+                        $this->addShopifyOrderCustomerDetail($neworder->id, $order_data_array['customer']);
+                    } else {
+                        Log::info(array("found" => "----------no customer-------------"));
+                    }
                 }
-                Log::info($neworder);
+                //                Log::info($neworder);
             } else {
+                Log::info(array("order exists main ja raha hai" => "----------" . $check_if_order_exists->id . "-------------"));
+
                 //it's mean order exists
                 // so in that case check if this order is from charity or not
                 //if it's charity order we don't have to update it
@@ -1350,12 +1367,10 @@ class WebhookController extends Controller
      */
     private function addShopifyOrderProductListDetail($order_id_local_db, $data)
     {
-
         //loop all products 
         foreach ($data as $product) {
             $OrderListOfProducts = new OrderListOfProducts();
             $check_result = $OrderListOfProducts->check_product_exists($order_id_local_db, $product['id']);
-
             if ($check_result == FALSE) {
                 $OrderListOfProducts->insertProductDetail($order_id_local_db, $product);
             }
@@ -1419,12 +1434,53 @@ class WebhookController extends Controller
      */
     private function addShopifyOrderCustomerDetail($order_id_local_db, $data)
     {
+        Log::info(array("found" => "------------------------customer----------------------------"));
+        Log::info($data);
+
         //check order bill detail 
         $Customers = new Customers();
-        $check_result = $Customers->check_Customer_data($data->email);
+        $check_result = $Customers->check_Customer_data($data['email']);
 
         if ($check_result == FALSE) {
-            $Customers->insertCustomerDetail($order_id_local_db, $data);
+            $make_customer_data_here = [
+                "email" => $data['email'],
+                "accepts_marketing" => $data['accepts_marketing'],
+                "first_name" => $data['first_name'],
+                "last_name" => $data['last_name'],
+                "orders_count" => $data['orders_count'],
+                "state" => $data['state'],
+                "total_spent" => $data['total_spent'],
+                "last_order_id" => $data['last_order_id'],
+                "note" => $data['note'],
+                "verified_email" => $data['verified_email'],
+                "multipass_identifier" => $data['multipass_identifier'],
+                "tax_exempt" => $data['tax_exempt'],
+                "phone" => $data['phone'],
+                "tags" => $data['tags'],
+                "last_order_name" => $data['last_order_name'],
+                "currency" => $data['currency'],
+                "accepts_marketing_updated_at" => $data['accepts_marketing_updated_at'],
+                "marketing_opt_in_level" => $data['marketing_opt_in_level'],
+                "sms_marketing_consent" => $data['sms_marketing_consent'],
+                "admin_graphql_api_id" => $data['admin_graphql_api_id'],
+                "shopify_customer_id" => $data['default_address']['customer_id'],
+                "default_address_address1" => $data['default_address']['address1'],
+                "default_address_address2" => $data['default_address']['address2'],
+                "default_address_city" => $data['default_address']['city'],
+                "default_address_province" => $data['default_address']['province'],
+                "default_address_country" => $data['default_address']['country'],
+                "default_address_zip" => $data['default_address']['zip'],
+                "default_address_phone" => $data['default_address']['phone'],
+                "default_address_province_code" => $data['default_address']['province_code'],
+                "default_address_country_code" => $data['default_address']['country_code'],
+                "default_address_country_name" => $data['default_address']['country_name']
+            ];
+
+            $Customers->insertCustomerDetail($order_id_local_db, $make_customer_data_here);
+        } else {
+            $order = Orders::findorfail($order_id_local_db);
+            $order->customer_id = $check_result->id;
+            $order->update();
         }
     }
 
@@ -1440,10 +1496,12 @@ class WebhookController extends Controller
      */
     private function updateOrder($store_domain_name, $order_data_array, $charity_id)
     {
+        Log::info(array("comies in " => "update"));
         // get store_id from DB where store domain name equals to webhook's domain name
         $store_data = Store::where('api_domain', $store_domain_name)->first();
-        //    Log::info($order_data_array);
+        Log::info($order_data_array);
         if ($store_data) {
+            Log::info(array("comies in " => "update 2"));
 
             $store_id = $store_data->id;
             $user_id = $charity_id; //mean charity id
@@ -1452,66 +1510,65 @@ class WebhookController extends Controller
             // because this is webhook 
             // and we have main website also where we will make charity orders
             $create_order = [
-                'order_id'     => $order_data_array['id'],
+                'order_id'     => array_key_exists('id', $order_data_array) ? $order_data_array['id'] : 0,
                 'store_id'      => $store_id,
-                "cancel_reason" => $order_data_array['cancel_reason'],
-                "cancelled_at" => $order_data_array['cancelled_at'],
-                "cart_token" => $order_data_array['cart_token'],
-                "checkout_id" => $order_data_array['checkout_id'],
-                "checkout_token" => $order_data_array['checkout_token'],
-                // "client_details" => $order_data_array['client_details'],
-                "closed_at" => $order_data_array['closed_at'],
-                "confirmed" => $order_data_array['confirmed'],
-                "contact_email" => $order_data_array['contact_email'],
-                "currency" => $order_data_array['currency'],
-                "current_subtotal_price" => $order_data_array['current_subtotal_price'],
-                "current_total_discounts" => $order_data_array['current_total_discounts'],
-                "current_total_duties_set" => $order_data_array['current_total_duties_set'],
-                "current_total_price" => $order_data_array['current_total_price'],
-                "current_total_tax" => $order_data_array['current_total_tax'],
-                "email" => $order_data_array['email'],
-                "estimated_taxes" => $order_data_array['estimated_taxes'],
-                "financial_status" => $order_data_array['financial_status'],
-                "fulfillment_status" => $order_data_array['fulfillment_status'],
-                "gateway" => $order_data_array['gateway'],
-                "landing_site" => $order_data_array['landing_site'],
-                "landing_site_ref" => $order_data_array['landing_site_ref'],
-                "location_id" => $order_data_array['location_id'],
-                "name" => $order_data_array['name'],
-                "note" => $order_data_array['note'],
-                // "note_attributes" => $order_data_array['note_attributes'],
-                "number" => $order_data_array['number'],
-                "order_number" => $order_data_array['order_number'],
-                "order_status_url" => $order_data_array['order_status_url'],
-                "original_total_duties_set" => $order_data_array['original_total_duties_set'],
+                "cancel_reason" => array_key_exists('cancel_reason', $order_data_array) ? $order_data_array['cancel_reason'] : "",
+                "cancelled_at" => array_key_exists('cancelled_at', $order_data_array) ? $order_data_array['cancelled_at'] : "",
+                "cart_token" => array_key_exists('cart_token', $order_data_array) ? $order_data_array['cart_token'] : "",
+                "checkout_id" => array_key_exists('checkout_id', $order_data_array) ? $order_data_array['checkout_id'] : "",
+                "checkout_token" => array_key_exists('checkout_token', $order_data_array) ? $order_data_array['checkout_token'] : "",
+                // "client_details" => array_key_exists('client_details',$order_data_array) ? $order_data_array['client_details'] : "",
+                "closed_at" => array_key_exists('closed_at', $order_data_array) ? $order_data_array['closed_at'] : "",
+                "confirmed" => array_key_exists('confirmed', $order_data_array) ? $order_data_array['confirmed'] : "",
+                "contact_email" => array_key_exists('contact_email', $order_data_array) ? $order_data_array['contact_email'] : "",
+                "currency" => array_key_exists('currency', $order_data_array) ? $order_data_array['currency'] : "",
+                "current_subtotal_price" => array_key_exists('current_subtotal_price', $order_data_array) ? $order_data_array['current_subtotal_price'] : 0,
+                "current_total_discounts" => array_key_exists('current_total_discounts', $order_data_array) ? $order_data_array['current_total_discounts'] : "",
+                "current_total_duties_set" => array_key_exists('current_total_duties_set', $order_data_array) ? $order_data_array['current_total_duties_set'] : "",
+                "current_total_price" => array_key_exists('current_total_price', $order_data_array) ? $order_data_array['current_total_price'] : "",
+                "current_total_tax" => array_key_exists('current_total_tax', $order_data_array) ? $order_data_array['current_total_tax'] : "",
+                "email" => array_key_exists('email', $order_data_array) ? $order_data_array['email'] : "",
+                "estimated_taxes" => array_key_exists('estimated_taxes', $order_data_array) ? $order_data_array['estimated_taxes'] : "",
+                "financial_status" => array_key_exists('financial_status', $order_data_array) ? $order_data_array['financial_status'] : "",
+                "fulfillment_status" => array_key_exists('fulfillment_status', $order_data_array) ? $order_data_array['fulfillment_status'] : "",
+                "gateway" => array_key_exists('gateway', $order_data_array) ? $order_data_array['gateway'] : "",
+                "landing_site" => array_key_exists('landing_site', $order_data_array) ? $order_data_array['landing_site'] : "",
+                "landing_site_ref" => array_key_exists('landing_site_ref', $order_data_array) ? $order_data_array['landing_site_ref'] : "",
+                "location_id" => array_key_exists('location_id', $order_data_array) ? $order_data_array['location_id'] : "",
+                "name" => array_key_exists('name', $order_data_array) ? $order_data_array['name'] : "",
+                "note" => array_key_exists('note', $order_data_array) ? $order_data_array['note'] : "",
+                // "note_attributes" => array_key_exists('note_attributes',$order_data_array) ? $order_data_array['note_attributes'] : "",
+                "number" => array_key_exists('number', $order_data_array) ? $order_data_array['number'] : "",
+                "order_number" => array_key_exists('order_number', $order_data_array) ? $order_data_array['order_number'] : "",
+                "order_status_url" => array_key_exists('order_status_url', $order_data_array) ? $order_data_array['order_status_url'] : "",
+                "original_total_duties_set" => array_key_exists('original_total_duties_set', $order_data_array) ? $order_data_array['original_total_duties_set'] : "",
                 "payment_gateway_names" => implode(",", $order_data_array['payment_gateway_names']),
-                "phone" => $order_data_array['phone'],
-                "presentment_currency" => $order_data_array['presentment_currency'],
-                "processed_at" => $order_data_array['processed_at'],
-                "processing_method" => $order_data_array['processing_method'],
-                "reference" => $order_data_array['reference'],
-                "referring_site" => $order_data_array['referring_site'],
-                "source_identifier" => $order_data_array['source_identifier'],
-                "source_name" => $order_data_array['source_name'],
-                "source_url" => $order_data_array['source_url'],
-                "subtotal_price" => $order_data_array['subtotal_price'],
-                "tags" => $order_data_array['tags'],
-                "taxes_included" => $order_data_array['taxes_included'],
-                "test" => $order_data_array['test'],
-                "token" => $order_data_array['token'],
-                "total_discounts" => $order_data_array['total_discounts'],
-                "total_line_items_price" => $order_data_array['total_line_items_price'],
-                "total_outstanding" => $order_data_array['total_outstanding'],
-                "total_price" => $order_data_array['total_price'],
-                "total_price_usd" => $order_data_array['total_price_usd'],
-                "total_tax" => $order_data_array['total_tax'],
-                "total_tip_received" => $order_data_array['total_tip_received'],
-                "total_weight" => $order_data_array['total_weight'],
-                "user_id" => $order_data_array['user_id'],
+                "phone" => array_key_exists('phone', $order_data_array) ? $order_data_array['phone'] : "",
+                "presentment_currency" => array_key_exists('presentment_currency', $order_data_array) ? $order_data_array['presentment_currency'] : "",
+                "processed_at" => array_key_exists('processed_at', $order_data_array) ? $order_data_array['processed_at'] : "",
+                "processing_method" => array_key_exists('processing_method', $order_data_array) ? $order_data_array['processing_method'] : "",
+                "reference" => array_key_exists('reference', $order_data_array) ? $order_data_array['reference'] : "",
+                "referring_site" => array_key_exists('referring_site', $order_data_array) ? $order_data_array['referring_site'] : "",
+                "source_identifier" => array_key_exists('source_identifier', $order_data_array) ? $order_data_array['source_identifier'] : "",
+                "source_name" => array_key_exists('source_name', $order_data_array) ? $order_data_array['source_name'] : "",
+                "source_url" => array_key_exists('source_url', $order_data_array) ? $order_data_array['source_url'] : "",
+                "subtotal_price" => array_key_exists('subtotal_price', $order_data_array) ? $order_data_array['subtotal_price'] : "",
+                "tags" => array_key_exists('tags', $order_data_array) ? $order_data_array['tags'] : "",
+                "taxes_included" => array_key_exists('taxes_included', $order_data_array) ? $order_data_array['taxes_included'] : "",
+                "test" => array_key_exists('test', $order_data_array) ? $order_data_array['test'] : "",
+                "token" => array_key_exists('token', $order_data_array) ? $order_data_array['token'] : "",
+                "total_discounts" => array_key_exists('total_discounts', $order_data_array) ? $order_data_array['total_discounts'] : "",
+                "total_line_items_price" => array_key_exists('total_line_items_price', $order_data_array) ? $order_data_array['total_line_items_price'] : "",
+                "total_outstanding" => array_key_exists('total_outstanding', $order_data_array) ? $order_data_array['total_outstanding'] : "",
+                "total_price" => array_key_exists('total_price', $order_data_array) ? $order_data_array['total_price'] : "",
+                "total_price_usd" => array_key_exists('total_price_usd', $order_data_array) ? $order_data_array['total_price_usd'] : "",
+                "total_tax" => array_key_exists('total_tax', $order_data_array) ? $order_data_array['total_tax'] : "",
+                "total_tip_received" => array_key_exists('total_tip_received', $order_data_array) ? $order_data_array['total_tip_received'] : "",
+                "total_weight" => array_key_exists('total_weight', $order_data_array) ? $order_data_array['total_weight'] : "",
+                "user_id" => array_key_exists('user_id', $order_data_array) ? $order_data_array['user_id'] : "",
                 "is_shopify_order" => 1,
                 "is_charity_order" => 0,
             ];
-
 
             $order = new Orders();
             //check because if this order generated by us and returning from shopify as a hook
@@ -1525,6 +1582,7 @@ class WebhookController extends Controller
             // in that cases we can get orders/create webhook hit so we can check if order exists
 
             $check_if_order_exists = $order->check_order_exists($order_data_array['id']);
+            Log::info($check_if_order_exists);
             if ($check_if_order_exists == FALSE) {
             } else {
                 //it's mean order exists
@@ -1536,39 +1594,47 @@ class WebhookController extends Controller
                     //it's mean order does not exists create order and insert all the details
                     $neworder = Orders::where("order_id", $order_data_array['id'])->first();
                     $neworder->update($create_order);
-                    Log::info("what is here", $neworder);
+                    Log::info(array("what is here", "check"));
                     if (!$neworder == false) {
                         Log::info(array("message" => "updating order test"));
 
                         // add billing detail
                         //params local id and billing detail
-                        if ($order_data_array['billing_address'] <> null)
-                            $this->updateShopifyOrderBillingDetail($neworder->id, $order_data_array['billing_address']);
+                        if (array_key_exists('billing_address', $order_data_array)) {
+                            if ($order_data_array['billing_address'] <> null)
+                                $this->updateShopifyOrderBillingDetail($neworder->id, $order_data_array['billing_address']);
+                        }
                         // add fullfilment
                         // params local id and fullfilment detail
-                        if ($order_data_array['fulfillments'] <> null)
-                            $this->updateShopifyOrderFullfilmentDetail($neworder->id, $order_data_array['fulfillments']);
-
+                        if (array_key_exists('fulfillments', $order_data_array)) {
+                            if ($order_data_array['fulfillments'] <> null)
+                                $this->updateShopifyOrderFullfilmentDetail($neworder->id, $order_data_array['fulfillments']);
+                        }
                         // add products list
                         // params local id and products list
-                        if ($order_data_array['line_items'] <> null)
-                            $this->updateShopifyOrderProductListDetail($neworder->id, $order_data_array['line_items']);
-
+                        if (array_key_exists('line_items', $order_data_array)) {
+                            if ($order_data_array['line_items'] <> null)
+                                $this->updateShopifyOrderProductListDetail($neworder->id, $order_data_array['line_items']);
+                        }
                         // add payment detail
                         // params local id and payment
-                        if ($order_data_array['payment_details'] <> null)
-                            $this->updateShopifyOrderPaymentDetail($neworder->id, $order_data_array['payment_details']);
-
+                        if (array_key_exists('payment_details', $order_data_array)) {
+                            if ($order_data_array['payment_details'] <> null)
+                                $this->updateShopifyOrderPaymentDetail($neworder->id, $order_data_array['payment_details']);
+                        }
                         // add refunds
                         // params local id and refund details
                         //   $this->updateShopifyOrderRefundDetail($neworder->id);
 
                         // add shipping detail
                         // params local id and shipping details
-                        if ($order_data_array['shipping_address'] <> null)
-                            $this->updateShopifyOrderShippingDetail($neworder->id, $order_data_array['shipping_address']);
+                        if (array_key_exists('shipping_address', $order_data_array)) {
+                            if ($order_data_array['shipping_address'] <> null)
+                                $this->updateShopifyOrderShippingDetail($neworder->id, $order_data_array['shipping_address']);
+                        }
                     }
-                    Log::info($neworder);
+
+                    //  Log::info($neworder);
                 }
             }
             // $product = Order::create();
@@ -1611,7 +1677,7 @@ class WebhookController extends Controller
         //check order bill detail 
         $OrderFullfilments = new OrderFullfilments();
         $check_result = $OrderFullfilments->check_fullfilment_data($order_id_local_db);
-        Log::info("check_result fullfillment");
+        Log::info(array("test" => "check_result fullfillment"));
         Log::info($check_result);
         if ($check_result == FALSE) {
             $OrderFullfilments->insertFullfilmentgDetail($order_id_local_db, $data);

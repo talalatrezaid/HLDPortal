@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Customers extends Model
 {
     use HasFactory;
-
+    protected $table = "customer";
     protected $fillable = [
         "email",
         "accepts_marketing",
@@ -46,7 +46,6 @@ class Customers extends Model
     public function check_Customer_data($email)
     {
         $qry =  Customers::where("email", $email)->first();
-
         if ($qry)
             return $qry;
         else
@@ -54,7 +53,7 @@ class Customers extends Model
     }
 
     //insert any kind of order's billing detail whether it coming from shopify or local db every order should have this detail
-    public function insertBillingDetail($order_id_local_db, $data)
+    public function insertCustomerDetail($order_id_local_db, $data)
     {
         $customerDetails = [
             "email" => $data["email"],
@@ -91,6 +90,9 @@ class Customers extends Model
         ];
 
         $insert = Customers::create($customerDetails);
+        $order = Orders::where("id", $order_id_local_db)->first();
+        $order->customer_id = $insert->id;
+        $order->update();
         if ($insert) {
             return $insert;
         } else {

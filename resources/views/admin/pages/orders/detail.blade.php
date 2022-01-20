@@ -233,7 +233,11 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-9 col-lg-9">
-                <h1 class="m-0 text-dark"><a href="<?php echo Adminurl('orders'); ?>">Orders</a></h1>
+                <h1 class="m-0 text-dark"><a href="<?php
+
+                                                    use Illuminate\Support\Facades\Log;
+
+                                                    echo Adminurl('orders'); ?>">Orders</a></h1>
             </div>
             <div class="col-lg-3">
                 <!-- <a href="{{route('charities.create')}}" class="btn btn-primary float-right">Add New Charity</a>
@@ -261,22 +265,26 @@
                                         <span><img class="img-fluid" src="./mosq_logo.png" alt="" style="width: 40px" /></span><span class="top_identity">
                                             Products</span>
                                         <?php
-                                        foreach ($order->list_items as $row) {
-                                            $title = $row['title'];
-                                            $amount = $row['price'];
-                                            $quantity = $row['quantity'];
-                                            $product_id = $row['product_id'];
-                                            $variantId = $row['variant_id'];
+                                        try {
+                                            foreach ($order->list_items as $row) {
+                                                $title = $row->title;
+                                                $amount = $row->price;
+                                                $quantity = $row->quantity;
+                                                $product_id = $row->product_id;
+                                                $variantId = $row->variant_id;
 
                                         ?>
 
-                                            <div class="row  my-4">
-                                                <div class="col-12 text-left">
-                                                    <span><img class="img-fluid" src="<?php echo write_product_image($product_id, $variantId); ?>" alt="" style="width: 40px; border-radius: 10px" /><span class="notify"><?php echo $quantity; ?></span></span>
-                                                    <span class="ml-4"><?php echo $title; ?> (£<?php echo $amount * $quantity ?>)</span>
+                                                <div class="row  my-4">
+                                                    <div class="col-12 text-left">
+                                                        <span><img class="img-fluid" src="<?php echo write_product_image($product_id, $variantId); ?>" alt="" style="width: 40px; border-radius: 10px" /><span class="notify"><?php echo $quantity; ?></span></span>
+                                                        <span class="ml-4"><?php echo $title; ?> (£<?php echo $amount * $quantity ?>)</span>
+                                                    </div>
                                                 </div>
-                                            </div>
                                         <?php
+                                            }
+                                        } catch (Exception $x) {
+                                            Log::info(array("error in order detail", "detail.blade.php line number 288"));
                                         } ?>
                                     </div>
 

@@ -111,11 +111,11 @@ class OrderListOfProducts extends Model
             "variant_title" => $data["variant_title"],
             "vendor" => $data["vendor"],
         ];
-        Log::info(array("product -> update order_id" => $data['order_id']));
+        //  Log::info(array("product -> update order_id" => $data['order_id']));
         Log::info($productDetail);
         $find = OrderListOfProducts::where("order_id", $order_id_local_db)->where("product_id", $data['product_id'])->first();
         if ($find <> null) {
-            Log::info(array("product -> updating product " => $data['order_id']));
+            //     Log::info(array("product -> updating product " => $data['order_id']));
 
             $find->update($productDetail);
         }

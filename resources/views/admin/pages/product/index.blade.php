@@ -170,7 +170,7 @@
 
                 // stop loader on ajax complete
                 $('#overlay').fadeOut();
-                location.reload();
+                //    location.reload();
             }
 
         });

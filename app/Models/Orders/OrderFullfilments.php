@@ -38,8 +38,7 @@ class OrderFullfilments extends Model
     {
 
         $fullfilmentgDetail = [
-            "order_id" => $data["order_id"],
-            "shopify_id" => $data["shopify_id"],
+            "order_id" => $order_id_local_db,
             "shopify_id" => $data["shopify_id"],
             "fulfillable_quantity" => $data["fulfillable_quantity"],
             "fulfillment_service" => $data["fulfillment_service"],

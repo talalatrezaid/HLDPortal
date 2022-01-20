@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ProductImage;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Http;
 
 
@@ -155,8 +156,10 @@ function getMagentoAuthToken($base_url, $username, $password)
 
 function write_product_image($product_id, $variantId)
 {
+  //get local product id of variant id
+  $variant = ProductVariant::where("variantId", $variantId)->first();
   //check if i can write queury here
-  $picture = ProductImage::select("source")->where("product_id", $product_id)->first();
+  $picture = ProductImage::select("source")->where("product_id", $variant->product_id)->first();
   if (isset($picture['source']))
     return $picture['source'];
   else
@@ -194,16 +197,19 @@ function write_order_donations($order_id)
         <span class="badge badge-warning float-right"><?php echo $donation_type; ?></span>
       </div>
     </div>
-  <?php
+    <?php
   }
 
   function write_charity_detail($charity)
   {
-  ?>
-    <div class="col-12 text-left"><?php echo $charity->charity_name; ?></div>
-    <div class="col-12 text-left"><?php echo $charity->email; ?></div>
-    <div class="col-12 text-left"><?php echo $charity->total_orders; ?> Orders</div>
-  <?php
+    if ($charity == null) {
+    } else {
+    ?>
+      <div class="col-12 text-left"><?php echo $charity->charity_name; ?></div>
+      <div class="col-12 text-left"><?php echo $charity->email; ?></div>
+      <div class="col-12 text-left"><?php echo $charity->total_orders; ?> Orders</div>
+    <?php
+    }
   }
 
   function write_customer_information($order_id)
@@ -214,11 +220,14 @@ function write_order_donations($order_id)
       $customer_information = $row;
       break;
     }
-  ?>
-    <div class="col-12 text-left"><?php echo $customer_information->first_name; ?> <?php echo $customer_information->last_name; ?></div>
-    <div class="col-12 text-left"><?php echo $customer_information->email; ?></div>
-    <div class="col-12 text-left"><?php echo $customer_information->phone; ?></div>
+    if ($customer_information == null) {
+    } else {
+    ?>
+      <div class="col-12 text-left"><?php echo $customer_information->first_name; ?> <?php echo $customer_information->last_name; ?></div>
+      <div class="col-12 text-left"><?php echo $customer_information->email; ?></div>
+      <div class="col-12 text-left"><?php echo $customer_information->phone; ?></div>
     <?php
+    }
   }
 
 
@@ -256,18 +265,21 @@ function write_order_donations($order_id)
       $shipping_information = $row;
       break;
     }
+    if ($shipping_information <> null) {
+
     ?>
-    <div class="col-12 text-left"><?php echo $shipping_information->address1; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->city; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->province; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->zip; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->address2; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->company; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->country; ?></div>
-    <div class="col-12 text-left"><?php echo $shipping_information->country_code; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->address1; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->city; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->province; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->zip; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->address2; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->company; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->country; ?></div>
+      <div class="col-12 text-left"><?php echo $shipping_information->country_code; ?></div>
 
 
-  <?php
+    <?php
+    }
   }
 
   function write_order_payment_infromation($order_id)
@@ -278,7 +290,7 @@ function write_order_donations($order_id)
       $shipping_information = $row;
       break;
     }
-  ?>
+    ?>
 
 
 
