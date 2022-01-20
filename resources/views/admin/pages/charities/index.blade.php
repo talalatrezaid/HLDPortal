@@ -32,9 +32,6 @@
                                 <th>Charity Name</th>
                                 <th>Slug</th>
                                 <th>Email.</th>
-                                <th>Total Orders</th>
-                                <th>Total Charity</th>
-
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -54,7 +51,7 @@
 
     $(document).ready(function() {
         $('#example').DataTable({
-            responsive: true, // Move this outside of the ajax option
+            responsive: false, // Move this outside of the ajax option
 
             "ajax": '/charities/show',
             'columns': [{
@@ -81,18 +78,6 @@
                 "render": function(data, type, row) {
                     console.log(row);
                     return '<span id="email' + row.id + '">' + row.email + '</span>';
-                }
-            }, {
-                "data": "total_orders",
-                "render": function(data, type, row) {
-                    console.log(row);
-                    return '<span id="email' + row.id + '">' + row.total_orders + '</span>';
-                }
-            }, {
-                "data": "total_charity_recieved",
-                "render": function(data, type, row) {
-                    console.log(row);
-                    return '<span id="email' + row.id + '">' + row.total_charity_recieved + '</span>';
                 }
             }, {
                 "data": "action",

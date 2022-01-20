@@ -104,6 +104,13 @@ class CharitiesController extends Controller
                 'field_type' => 'file',
             );
 
+            $newvalues[0] = array(
+                'page_id' => $page_id,
+                'field_key' => 'hero_section_text',
+                'field_title'  => 'Primary Product',
+                'field_value' => '0',
+                'field_type' => 'text',
+            );
 
 
 
@@ -538,7 +545,7 @@ class CharitiesController extends Controller
 
             $btn = '';
 
-            $btn = $btn . '<a href="' . Adminurl('productToCharity/') . $row['id'] . '" class="edit btn btn-primary btn-sm">assign products</a><a href="' . route('charities.edit', $row["id"]) . '" class="edit btn btn-primary btn-sm">edit</a>';
+            $btn = $btn . '<a href="' . Adminurl('productToCharity/') . $row['id'] . '" class="edit btn btn-primary btn-sm">assign products</a> <a href="' . route('charities.edit', $row["id"]) . '" class="edit btn btn-primary btn-sm">edit</a>';
             $btn = $btn . '&nbsp; 
             <form action="' . route('charities.destroy', $row["id"]) . '" method="POST"> 
             ' . method_field("DELETE") . '
