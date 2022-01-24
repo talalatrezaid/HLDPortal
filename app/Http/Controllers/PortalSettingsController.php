@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PortalSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Validator;
 
 class PortalSettingsController extends Controller
 {
@@ -80,7 +81,23 @@ class PortalSettingsController extends Controller
      */
     public function update(Request $request, PortalSettings $portalSettings)
     {
-        //
+        $v = Validator::make($request->all(), [
+            //
+            'testing_worldpay_client_id' => 'required',
+            'testing_worldpay_secret_key' => 'required',
+            'live_worldpay_client_id' => 'required',
+            'live_worldpay_secret_key' => 'required',
+            'welcome_charity_email_messsage' => 'required',
+            'assigning_product_email_message' => 'required',
+            'customer_order_email_message' => 'required',
+            'charity_order_email_message' => 'required',
+            'superadmin_email_message' => 'required',
+            'website_notify_email' => 'required|email',
+        ]);
+
+        if ($v->fails()) {
+            return redirect()->back()->withErrors($v->errors());
+        }
     }
 
     /**

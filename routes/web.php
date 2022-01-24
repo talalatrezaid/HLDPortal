@@ -13,6 +13,8 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\UserRoles;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\PortalSettingsController;
+use App\Models\PortalSettings;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +88,8 @@ Route::group([
     Route::get('/orderdetail/{id}', [OrdersController::class, "orderDetail"]); //create order
 
     Route::resource('/orders', OrdersController::class); //create order
+
+    Route::resource('/settings', PortalSettingsController::class); //create order
 
     //get assigned products for datatable 
     Route::get('/charities/{id}/assigned_products', [CharitiesController::class, 'getAssignedProductsForDataTable']); //create user

@@ -80,6 +80,14 @@ if (request()->segment(1) == env('ADMIN_PREFIX')) {
           </a>
         </li>
 
+
+        <li class="nav-item">
+          <a href="<?php echo Adminurl('settings'); ?>" class="nav-link ">
+            <i class="nav-icon fa fa-gear"></i>
+            <p>Settings</p>
+          </a>
+        </li>
+
         <li class="nav-item">
           <a href="<?php echo Adminurl('logout'); ?>" class="nav-link"> <i class="nav-icon fas fa-power-off"></i> &nbsp;<P>Logout</P> </a>
         </li>
