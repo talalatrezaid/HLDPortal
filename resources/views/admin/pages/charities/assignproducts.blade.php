@@ -79,7 +79,7 @@
 
                         <div class="form-group">
                             <label for="exampleInputPassword1">Add Quantity</label>
-                            <input type="number" class="form-control" id="qty" name="qty" placeholder="123">
+                            <input type="number" min="1" class="form-control" id="qty" name="qty" value="1" placeholder="123">
                         </div>
                         <div class="alert alert-danger d-none" id="error">
 
@@ -170,8 +170,13 @@
 
     function verify_product_quantity() {
         //checking selected product quantity must be lower then shopify store quantity
-        $(".loading").removeClass("d-none");
         var qty = $("#qty").val();
+        if (qty > 0) {
+            alert("Please provide a quantity number greater than 0");
+            return false;
+        }
+
+        $(".loading").removeClass("d-none");
 
         //get selected product values 
         var selected_product = ($('.js-data-example-ajax').select2('data')[0]);
