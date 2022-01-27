@@ -12,8 +12,10 @@ use App\Http\Controllers\CharitiesController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\UserRoles;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PortalSettingsController;
+use App\Models\Orders\Orders;
 use App\Models\PortalSettings;
 
 /*
@@ -90,6 +92,15 @@ Route::group([
     Route::resource('/orders', OrdersController::class); //create order
 
     Route::resource('/settings', PortalSettingsController::class); //create order
+
+    Route::get('/notificationscount', [NotificationsController::class, "notifications_count"]); //create order
+
+    Route::get('/notifications', [NotificationsController::class, "index"]); //create order
+    Route::post('/readnotifications/{id}', [NotificationsController::class, "readnotifications"]); //create order
+
+    Route::get('/ordercomplete/{id}', [OrdersController::class, "orderComplete"]); //create order
+
+    Route::put('/updatesettings/{id}', [PortalSettingsController::class, "update"]); //create order
 
     //get assigned products for datatable 
     Route::get('/charities/{id}/assigned_products', [CharitiesController::class, 'getAssignedProductsForDataTable']); //create user

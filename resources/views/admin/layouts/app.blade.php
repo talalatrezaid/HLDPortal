@@ -118,5 +118,59 @@
 </body>
 {{-- filemanager js --}}
 <script src="{{ asset('vendor/file-manager/js/file-manager.js') }}"></script>
+<script>
+  $(document).ready(function() {
+    var down = false;
+    $('#bell').click(function(e) {
+      var color = $(this).text();
+      if (down) {
+
+        $('#box').css('height', '0px');
+        $('#box').css('opacity', '0');
+        down = false;
+      } else {
+        get_notifications();
+        $('#box').css('height', 'auto');
+        $('#box').css('opacity', '1');
+        down = true;
+      }
+    });
+
+  });
+
+  setInterval(get_notifications_count, 10000);
+
+  function get_notifications_count() {
+
+    $.get("/notificationscount", function(data, status) {
+      $("#count_message").html(data.count);
+    });
+  }
+
+
+  function get_notifications() {
+    html = "";
+    $.get("/notifications", function(data, status) {
+      console.log(data.notifications);
+      data.notifications.map((item, index) => {
+        html += '<div class="notifications-item" onclick="readnotification(' + item.id + ',' + item.link + ',\'' + data.base_url + '\')"><div class="text"><p>' + item.title + '</p></div> </div>';
+      });
+
+      $("#box").html(html);
+    });
+  }
+
+  function readnotification(id, order_id, base_url) {
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.post("/readnotifications/" + id, function(data, status) {
+
+      window.location.href = base_url + order_id;
+    });
+  }
+</script>
 
 </html>

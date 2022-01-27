@@ -185,15 +185,20 @@
         border-top: 1px solid lightgray;
     }
 
-    .button_fulfill button {
+    .button_fulfill button,
+    .button_fulfill .button {
         margin: 0 10px;
         border: none;
         border-radius: 5px;
+        color: #FFF;
         padding: 10px 25px;
         background-color: rgb(3, 66, 3);
     }
 
+    .button_fulfill button:hover,
     .button_fulfill button:hover {
+        color: #FFF;
+
         background-color: rgb(3, 66, 3);
     }
 
@@ -292,9 +297,16 @@
                                 </div>
 
                                 <div class="row no-gutters button_fulfill pb-3">
-                                    <button type="submit" class="btn-primary text-right">
-                                        Fulfill item
-                                    </button>
+                                    <?php if (strtolower($order->fulfillment_status) == "completed") {
+                                    ?>
+                                        <button class="btn-primary text-right">
+                                            Order Completed
+                                        </button>
+                                    <?php
+                                    } else { ?><a class="button" href="<?php echo Adminurl("ordercomplete/" . $order->id) ?>" class="btn-primary text-right">
+                                            Complete Order
+                                        </a>
+                                    <?php } ?>
                                 </div>
                             </div>
                             <div class="card scnd_left_paid_view p-3 my-4">
@@ -312,7 +324,10 @@
 
                                 </div>
                                 <div class="row mt-3 b-top">
-
+                                    <span><b>UK Tax Payer:</b></span> <?php if ($order->uktaxpayer == 1) echo "YES";
+                                                                        else {
+                                                                            echo "NO";
+                                                                        } ?>
                                 </div>
                             </div>
                             <div class="card scnd_left_paid_view my-4">
@@ -440,9 +455,14 @@
 
                                 <div class="first_right_billing_address_view p-3">
                                     <div class="row mt-3">
+                                        <div class="col-12 col-sm-7 text-grey-d2 text-95 mt-2 mt-lg-0">
+                                            <span>Stripe</span>
+                                        </div>
                                         <div class="col-12text-grey-d2 text-95 mt-2 mt-lg-0">
-                                            <p class="mb-2">Ahmed rehan</p>
-                                            <p class="mb-2">Karachi</p>
+                                            <?php
+                                            //calling helper function here
+                                            write_payment_detail($order->id);
+                                            ?>
                                         </div>
                                     </div>
                                 </div>

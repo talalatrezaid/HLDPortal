@@ -170,130 +170,155 @@ function write_order_donations($order_id)
 {
   //writing self query because i need it in codeigniter helper also
   $donations = DB::select("select * from charity_donation inner join appeals on project_id = appeals.id where charity_donation.order_id =" . $order_id);
+  if (count($donations) > 0) {
+    foreach ($donations as $row) {
+      $title = $row->project_name;
+      $amount = $row->amount;
+      $charity_type = $row->charity_type;
+      $donation_type = "General Charity";
+      if ($charity_type == 2) {
+        $donation_type = "Sadqah";
+      }
 
-  foreach ($donations as $row) {
-    $title = $row->project_name;
-    $amount = $row->amount;
-    $charity_type = $row->charity_type;
-    $donation_type = "General Charity";
-    if ($charity_type == 2) {
-      $donation_type = "Sadqah";
-    }
-
-    if ($charity_type == 3) {
-      $donation_type = "Zakat";
-    }
-    $bas_url = "http://92.205.25.25/~rezaid/charities/uploads/appeals/featured_image/";
-    $featured_image = $bas_url . $row->featured_image;
+      if ($charity_type == 3) {
+        $donation_type = "Zakat";
+      }
+      $bas_url = "http://92.205.25.25/~rezaid/charities/uploads/appeals/featured_image/";
+      $featured_image = $bas_url . $row->featured_image;
 
 ?>
 
-    <div class="row  my-4">
-      <div class="col-12 text-left">
-        <span><img class="img-fluid" src="<?php echo $featured_image; ?>" alt="" style="width: 60px; height:auto; border-radius: 10px" /></span>
-        <span class="ml-4"><?php echo $title; ?> (£<?php echo $amount; ?>)
-        </span>
-        <br />
-        <span class="badge badge-warning float-right"><?php echo $donation_type; ?></span>
+      <div class="row  my-4">
+        <div class="col-12 text-left">
+          <span><img class="img-fluid" src="<?php echo $featured_image; ?>" alt="" style="width: 60px; height:auto; border-radius: 10px" /></span>
+          <span class="ml-4"><?php echo $title; ?> (£<?php echo $amount; ?>)
+          </span>
+          <br />
+          <span class="badge badge-warning float-right"><?php echo $donation_type; ?></span>
+        </div>
       </div>
-    </div>
-    <?php
-  }
-
-  function write_charity_detail($charity)
-  {
-    if ($charity == null) {
-    } else {
-    ?>
-      <div class="col-12 text-left"><?php echo $charity->charity_name; ?></div>
-      <div class="col-12 text-left"><?php echo $charity->email; ?></div>
-      <div class="col-12 text-left"><?php echo $charity->total_orders; ?> Orders</div>
     <?php
     }
-  }
-
-  function write_customer_information($order_id)
-  {
-    $qry = DB::select("select customer.* from orders inner join customer on orders.customer_id = customer.id where orders.id =" . $order_id);
-    $customer_information = null;
-    foreach ($qry as $row) {
-      $customer_information = $row;
-      break;
-    }
-    if ($customer_information == null) {
-    } else {
+  } else {
     ?>
-      <div class="col-12 text-left"><?php echo $customer_information->first_name; ?> <?php echo $customer_information->last_name; ?></div>
-      <div class="col-12 text-left"><?php echo $customer_information->email; ?></div>
-      <div class="col-12 text-left"><?php echo $customer_information->phone; ?></div>
-    <?php
-    }
+    <div class="alert alert-danger">No Donation With This Order</div>
+  <?php
   }
+}
 
-
-  function write_customer_billing_address($order_id)
-  {
-    $qry = DB::select("select * from order_billing_address where order_id = " . $order_id);
-    $billing_information = null;
-    foreach ($qry as $row) {
-      $billing_information = $row;
-      break;
-    }
-    if ($billing_information <> null) {
-    ?>
-      <div class="col-12 text-left"><?php echo $billing_information->address1; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->city; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->province; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->zip; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->address2; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->company; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->country; ?></div>
-      <div class="col-12 text-left"><?php echo $billing_information->country_code; ?></div>
-
-
-    <?php
-    } else {
-      echo "Not Available";
-    }
+function write_charity_detail($charity)
+{
+  if ($charity == null) {
+  } else {
+  ?>
+    <div class="col-12 text-left"><?php echo $charity->charity_name; ?></div>
+    <div class="col-12 text-left"><?php echo $charity->email; ?></div>
+    <div class="col-12 text-left"><?php echo $charity->total_orders; ?> Orders</div>
+  <?php
   }
+}
 
-  function write_customer_shipping_address($order_id)
-  {
-    $qry = DB::select("select * from order_shipping_address where order_id = " . $order_id);
-    $shipping_information = null;
-    foreach ($qry as $row) {
-      $shipping_information = $row;
-      break;
-    }
-    if ($shipping_information <> null) {
-
-    ?>
-      <div class="col-12 text-left"><?php echo $shipping_information->address1; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->city; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->province; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->zip; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->address2; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->company; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->country; ?></div>
-      <div class="col-12 text-left"><?php echo $shipping_information->country_code; ?></div>
-
-
-    <?php
-    }
+function write_customer_information($order_id)
+{
+  $qry = DB::select("select customer.* from orders inner join customer on orders.customer_id = customer.id where orders.id =" . $order_id);
+  $customer_information = null;
+  foreach ($qry as $row) {
+    $customer_information = $row;
+    break;
   }
+  if ($customer_information == null) {
+  } else {
+  ?>
+    <div class="col-12 text-left"><?php echo $customer_information->first_name; ?> <?php echo $customer_information->last_name; ?></div>
+    <div class="col-12 text-left"><?php echo $customer_information->email; ?></div>
+    <div class="col-12 text-left"><?php echo $customer_information->phone; ?></div>
+  <?php
+  }
+}
 
-  function write_order_payment_infromation($order_id)
-  {
-    $qry = DB::select("select * from order_shipping_address where order_id = " . $order_id);
-    $shipping_information = null;
-    foreach ($qry as $row) {
-      $shipping_information = $row;
-      break;
-    }
-    ?>
+
+function write_customer_billing_address($order_id)
+{
+  $qry = DB::select("select * from order_billing_address where order_id = " . $order_id);
+  $billing_information = null;
+  foreach ($qry as $row) {
+    $billing_information = $row;
+    break;
+  }
+  if ($billing_information <> null) {
+  ?>
+    <div class="col-12 text-left"><?php echo $billing_information->address1; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->city; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->province; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->zip; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->address2; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->company; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->country; ?></div>
+    <div class="col-12 text-left"><?php echo $billing_information->country_code; ?></div>
+
+
+  <?php
+  } else {
+    echo "Not Available";
+  }
+}
+
+function write_payment_detail($order_id)
+{
+  $qry = DB::select("select * from order_payment_details where order_id = " . $order_id);
+  $billing_information = null;
+  foreach ($qry as $row) {
+    $billing_information = $row;
+    break;
+  }
+  if ($billing_information <> null) {
+  ?>
+    <div class="col-12 text-left"><a target="_blank" href="https://dashboard.stripe.com/test/payments/<?php echo $billing_information->avs_result_code; ?>">
+        <?php echo $billing_information->avs_result_code; ?>
+      </a></div>
+
+  <?php
+  } else {
+    echo "Not Available";
+  }
+}
+
+function write_customer_shipping_address($order_id)
+{
+  $qry = DB::select("select * from order_shipping_address where order_id = " . $order_id);
+  $shipping_information = null;
+  foreach ($qry as $row) {
+    $shipping_information = $row;
+    break;
+  }
+  if ($shipping_information <> null) {
+
+  ?>
+    <div class="col-12 text-left"><?php echo $shipping_information->address1; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->city; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->province; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->zip; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->address2; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->company; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->country; ?></div>
+    <div class="col-12 text-left"><?php echo $shipping_information->country_code; ?></div>
+
+
+  <?php
+  }
+}
+
+function write_order_payment_infromation($order_id)
+{
+  $qry = DB::select("select * from order_shipping_address where order_id = " . $order_id);
+  $shipping_information = null;
+  foreach ($qry as $row) {
+    $shipping_information = $row;
+    break;
+  }
+  ?>
 
 
 
 <?php
-  }
 }

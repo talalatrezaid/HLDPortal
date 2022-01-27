@@ -164,8 +164,14 @@ class Product extends Model
 
     function adjustOrderOnShopifyStore($variant_id, $quantity)
     {
+
         //find inventory item id 
-        $inventory = ProductVariant::where("variantId", $variant_id)->first();
+        $inventory = "";
+        if (strlen($variant_id) > 5) {
+            $inventory = ProductVariant::where("variantId", $variant_id)->first();
+        } else {
+            $inventory = ProductVariant::where("id", $variant_id)->first();
+        }
         //get from database store connection 
         $store = Store::where("user_id", Auth::user()->id)->first();
         $api_key            = $store->api_key;

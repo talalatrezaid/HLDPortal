@@ -307,7 +307,10 @@ class WebhookController extends Controller
             //    Log::info($data);
             // parameters domain,  order array , charity_id
             // call method to add information in DB
-            $res = $this->createOrder($hmac_header_domain, $data_array, 0);
+            if ($data_array->email == "jane@example.com") {
+            } else {
+                $res = $this->createOrder($hmac_header_domain, $data_array, 0);
+            }
             error_log("Product Add response: " . $res);
         } else if (trim($hmac_header_topic) == 'orders/updated' || $hmac_header_topic == 'orders/fulfilled') {
             // if event is orders/update
@@ -1156,7 +1159,7 @@ class WebhookController extends Controller
 
         // get store_id from DB where store domain name equals to webhook's domain name
         $store_data = Store::where('api_domain', $store_domain_name)->first();
-        //  Log::info($order_data_array);
+        Log::info($order_data_array);
         if ($store_data) {
 
             $store_id = $store_data->id;

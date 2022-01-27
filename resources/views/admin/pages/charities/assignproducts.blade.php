@@ -171,9 +171,10 @@
     function verify_product_quantity() {
         //checking selected product quantity must be lower then shopify store quantity
         var qty = $("#qty").val();
-        if (qty > 0) {
+        if (qty > 0) {} else {
             alert("Please provide a quantity number greater than 0");
             return false;
+
         }
 
         $(".loading").removeClass("d-none");

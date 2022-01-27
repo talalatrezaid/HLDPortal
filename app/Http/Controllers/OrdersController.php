@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderCompleteEmail;
+use App\Models\charity;
 use App\Models\Orders\Orders;
+use App\Models\PortalSettings;
 use Illuminate\Http\Request;
 use Auth;
 use Exception;
@@ -60,7 +63,45 @@ class OrdersController extends Controller
         //
         return datatables()->of(Orders::with('billing', 'shipping', "payment", "list_items", "fullfilments", "charities"))->make(true);
     }
+    public function orderComplete($id)
+    {
+        //
+        if (Auth::user() == null) {
 
+            return view('admin.pages.account.login');
+        }
+
+        $orders = Orders::findorfail($id);
+        $orders->fulfillment_status = "Completed";
+        $orders->save();
+
+        //get this charity email
+        if ($orders->charity_id > 0) {
+            //charity email 
+            $charity = charity::where("id", $orders->charity_id)->first();
+
+            $charityemail = $charity->email;
+            $data['order_no'] = $id;
+            $email = new  OrderCompleteEmail($data);
+            Mail::to($charityemail)->send($email);
+        }
+        //get settings email 
+        $setttings = PortalSettings::find(1);
+        $superadmin = $setttings->website_notify_email;
+        $data['order_no'] = $id;
+        $email = new  OrderCompleteEmail($data);
+        Mail::to($superadmin)->send($email);
+
+        //get customer email
+        if ($orders->customer_id > 0) {
+            //get customer email
+            $email = $orders->customers_email;
+            $data['order_no'] = $id;
+            $email = new  OrderCompleteEmail($data);
+            Mail::to($email)->send($email);
+        }
+        return   redirect(Adminurl("orderdetail/" . $id));
+    }
     public function orderDetail($id)
     {
         //

@@ -422,7 +422,6 @@ class CharitiesController extends Controller
             ];
 
             //send email to charity and superadmin
-            $data['charity_name'] = "islamic relief";
             $data['product_name'] = $request->product_name;
             $data['product_quantity'] = $request->quantity;
 
@@ -454,9 +453,12 @@ class CharitiesController extends Controller
             //      echo $this->db->last_query();die();
 
             $data['charity_logo_here']  = "http://hldcharity.test/" . 'uploads/pages/' . $logo;
+            $charity = charity::where("id", $request->charity_id)->first();
+            $charityemail = $charity->email;
+            $data['charity_name'] = $charity->charity_name;
 
             $email = new  AssignProductToCharity($data);
-            Mail::to("charityemail@gmail.com")->send($email);
+            Mail::to($charityemail)->send($email);
 
             return Response::json(array("success" => 1, "message" => "Product has been assigned to charity successfully"));
 
@@ -485,7 +487,6 @@ class CharitiesController extends Controller
                 ];
 
                 //send email to charity and superadmin
-                $data['charity_name'] = "islamic relief";
                 $data['product_name'] = $request->product_name;
                 $data['product_quantity'] = $request->quantity;
 
@@ -516,8 +517,26 @@ class CharitiesController extends Controller
                 }
 
 
+                $product_img = ProductImage::where("product_id", $request->local_product_id)->first();
+                $image = $product_img->source;
+                $data['product_image_here'] = $image;
+                $qry = DB::table("page")
+                    ->selectRaw('page.*,pages.page_id,pages.field_key,pages.field_value,pages.field_type,pages.field_title')
+                    ->join('pages', 'pages.page_id', "=", "page.id")
+                    ->where('charity_id', $request->charity_id)
+                    ->orderBy('pages.id', 'asc')->get();
+                $page_content = $qry;
+                $logo = $page_content[0]->field_value;
+                //      echo $this->db->last_query();die();
+
+                $data['charity_logo_here']  = "http://hldcharity.test/" . 'uploads/pages/' . $logo;
+                $charity = charity::where("id", $request->charity_id)->first();
+                $charityemail = $charity->email;
+                $data['charity_name'] = $charity->charity_name;
+
                 $email = new  AssignProductToCharity($data);
-                Mail::to($this->send_mail)->send($email);
+                Mail::to($charityemail)->send($email);
+
 
                 return Response::json(array("success" => 1, "message" => "Product has been assigned to charity successfully"));
             } else {

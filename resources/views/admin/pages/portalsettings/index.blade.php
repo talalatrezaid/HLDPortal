@@ -27,18 +27,33 @@
         @endif
 
 
+        @if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if(session()->has('message'))
+        <div class="alert alert-success">
+            {{ session()->get('message') }}
+        </div>
+        @endif
 
         <div class="card">
             <div class="col-md-12 pt-2 pl-2">
-                <h4>Worldpay Credentials</h4>
+                <h4>Stripe Credentials</h4>
             </div>
             <hr color="#ccc" style="border-color:#d5d0d0" />
             <div class="col-md-12">
-                <form method="post" action="<?php Adminurl('settings/' . $settings->id); ?>">
+                <form method="post" action="<?php echo route('settings.update', $settings->id); ?>">
                     @csrf
                     @method("PUT")
                     <div class="form-group">
-                        <label>WORLDPAY SERVICE KEY(Test)</label>
+                        <label>Stripe Public KEY(Test)</label>
                         <div class="input-group" id="show_hide_password">
                             <input class="form-control" type="password" name="testing_worldpay_client_id" value="<?php echo $settings->testing_worldpay_client_id; ?>">
                             <div class="bg-gray px-2 pt-1 input-group-addon">
@@ -48,7 +63,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>WORLDPAY Client KEY(Test)</label>
+                        <label>Stripe Secret KEY(Test)</label>
                         <div class="input-group" id="show_hide_password1">
                             <input class="form-control" type="password" name="testing_worldpay_secret_key" value="<?php echo $settings->testing_worldpay_secret_key; ?>">
                             <div class="bg-gray px-2 pt-1 input-group-addon">
@@ -59,7 +74,7 @@
 
 
                     <div class="form-group">
-                        <label>WORLDPAY SERVICE KEY(Live)</label>
+                        <label>Stripe Public KEY(Live)</label>
                         <div class="input-group" id="show_hide_password2">
                             <input class="form-control" type="password" name="live_worldpay_client_id" value="<?php echo $settings->live_worldpay_client_id; ?>">
                             <div class="bg-gray px-2 pt-1 input-group-addon">
@@ -69,7 +84,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>WORLDPAY Client KEY(Live)</label>
+                        <label>Stripe Secret KEY(Live)</label>
                         <div class="input-group" id="show_hide_password3">
                             <input class="form-control" type="password" name="live_worldpay_secret_key" value="<?php echo $settings->live_worldpay_secret_key; ?>">
                             <div class="bg-gray px-2 pt-1 input-group-addon">
@@ -98,17 +113,17 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">customer_order_email_message</label>
+                        <label for="exampleFormControlTextarea1">Customer Order Email Message</label>
                         <textarea class="form-control" name="customer_order_email_message" id="exampleFormControlTextarea1" rows="3"><?php echo $settings->customer_order_email_message; ?></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">Example textarea</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"><?php echo $settings->charity_order_email_message; ?></textarea>
+                        <label for="exampleFormControlTextarea1">Charity Order Email Message</label>
+                        <textarea class="form-control" name="charity_order_email_message" id="exampleFormControlTextarea1" rows="3"><?php echo $settings->charity_order_email_message; ?></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="exampleFormControlTextarea1">superadmin Order Email Message</label>
+                        <label for="exampleFormControlTextarea1">Superadmin Order Email Message</label>
                         <textarea class="form-control" name="superadmin_email_message" id="superadmin_email_message" rows="3"><?php echo $settings->superadmin_email_message; ?></textarea>
                     </div>
 

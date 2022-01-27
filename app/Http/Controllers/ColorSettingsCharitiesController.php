@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notifications;
+use App\Models\ColorSettingsCharities;
 use Illuminate\Http\Request;
 
-class NotificationsController extends Controller
+class ColorSettingsCharitiesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,22 +14,9 @@ class NotificationsController extends Controller
      */
     public function index()
     {
-        $notification_url = Adminurl('orderdetail/');
-        $count  = Notifications::where("for_charity_id", 0)->where("is_read", 0)->get();
-        return ["notifications" => $count, "base_url" => $notification_url];
+        //
     }
-    public function readnotifications($id)
-    {
-        $findnotification = Notifications::findorfail($id);
-        $findnotification->is_read = 1;
-        $findnotification->save();
-        return ["success" => 1];
-    }
-    public function notifications_count()
-    {
-        $count  = Notifications::where("for_charity_id", 0)->where("is_read", 0)->get()->count();
-        return ["count" => $count];
-    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -54,10 +41,10 @@ class NotificationsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Notifications  $notifications
+     * @param  \App\Models\ColorSettingsCharities  $colorSettingsCharities
      * @return \Illuminate\Http\Response
      */
-    public function show(Notifications $notifications)
+    public function show(ColorSettingsCharities $colorSettingsCharities)
     {
         //
     }
@@ -65,10 +52,10 @@ class NotificationsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Notifications  $notifications
+     * @param  \App\Models\ColorSettingsCharities  $colorSettingsCharities
      * @return \Illuminate\Http\Response
      */
-    public function edit(Notifications $notifications)
+    public function edit(ColorSettingsCharities $colorSettingsCharities)
     {
         //
     }
@@ -77,10 +64,10 @@ class NotificationsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Notifications  $notifications
+     * @param  \App\Models\ColorSettingsCharities  $colorSettingsCharities
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Notifications $notifications)
+    public function update(Request $request, ColorSettingsCharities $colorSettingsCharities)
     {
         //
     }
@@ -88,10 +75,10 @@ class NotificationsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Notifications  $notifications
+     * @param  \App\Models\ColorSettingsCharities  $colorSettingsCharities
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Notifications $notifications)
+    public function destroy(ColorSettingsCharities $colorSettingsCharities)
     {
         //
     }
