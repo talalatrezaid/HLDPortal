@@ -87,15 +87,21 @@
   <script src="{{ asset('dist/js/demo.js')}}"></script>
   <!-- Toastr -->
   <script src="{{ asset('plugins/toastr/toastr.min.js')}}"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css" rel="stylesheet" type="text/css" />
+
   <!-- Rezaid App -->
   <!-- <script src="{{ asset('dist/js/rezaid.min.js')}}"></script> -->
   <!-- Bootstrap Switch -->
   <script src="{{asset('plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
   <!-- datatables -->
-  <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 
   <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
+
 
 <body class="hold-transition sidebar-mini layout-fixed">
   <div class="wrapper">

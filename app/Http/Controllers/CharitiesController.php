@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Validator;
 use Redirect;
 use Response;
+use Carbon\Carbon;
 
 
 class CharitiesController extends Controller
@@ -104,7 +105,7 @@ class CharitiesController extends Controller
                 'field_type' => 'file',
             );
 
-            $newvalues[0] = array(
+            $newvalues[2] = array(
                 'page_id' => $page_id,
                 'field_key' => 'hero_section_text',
                 'field_title'  => 'Primary Product',
@@ -227,36 +228,36 @@ class CharitiesController extends Controller
             $setting[10]['settings_type'] = "";
             $setting[10]['setting_group'] = "";
             $setting[10]['charity_id'] = $charity->id;
-            $setting[11]['setting_title'] = "Donation Limi";
+            $setting[11]['setting_title'] = "Founding Members";
             $setting[11]['setting_description'] = "Office address";
-            $setting[11]['key'] = "donation_limit";
+            $setting[11]['key'] = "founding_members_link";
             $setting[11]['value'] = "";
             $setting[11]['settings_name'] = "";
             $setting[11]['settings_value'] = "";
             $setting[11]['settings_type'] = "";
             $setting[11]['setting_group'] = "";
             $setting[11]['charity_id'] = $charity->id;
-            $setting[12]['setting_title'] = "BrainTree Environment";
+            $setting[12]['setting_title'] = "Terms And Conditions Link";
             $setting[12]['setting_description'] = "Office address";
-            $setting[12]['key'] = "address";
+            $setting[12]['key'] = "terms_link";
             $setting[12]['value'] = "";
             $setting[12]['settings_name'] = "";
             $setting[12]['settings_value'] = "";
             $setting[12]['settings_type'] = "";
             $setting[12]['setting_group'] = "";
             $setting[12]['charity_id'] = $charity->id;
-            $setting[13]['setting_title'] = "Mic";
+            $setting[13]['setting_title'] = "Privacy";
             $setting[13]['setting_description'] = "Office address";
-            $setting[13]['key'] = "mic_icon";
+            $setting[13]['key'] = "privacy_link";
             $setting[13]['value'] = "";
             $setting[13]['settings_name'] = "";
             $setting[13]['settings_value'] = "";
             $setting[13]['settings_type'] = "";
             $setting[13]['setting_group'] = "";
             $setting[13]['charity_id'] = $charity->id;
-            $setting[14]['setting_title'] = "Broadcast Link";
+            $setting[14]['setting_title'] = "About Us Description";
             $setting[14]['setting_description'] = "Office address";
-            $setting[14]['key'] = "broadcast_icon";
+            $setting[14]['key'] = "about_us";
             $setting[14]['value'] = "";
             $setting[14]['settings_name'] = "";
             $setting[14]['settings_value'] = "";
@@ -399,45 +400,41 @@ class CharitiesController extends Controller
             //update new quantity to db 
 
             $productvariant = ProductVariant::findorfail((int) $request->local_product_variant_id);
+            //send email to charity and superadmin
+            $data['product_name'] = $request->product_name;
+            $data['product_quantity'] = $request->quantity;
 
             //update new quantity 
             //now assign quantity to charity and decreast 
             $live_shopify_quantity = $live_shopify_quantity - $quantity;
             $productvariant->quantity = $live_shopify_quantity;
             $productvariant->save();
-
-            //now insert quantity product to charity table which is 
-            $assigning = AssignedCharitiesProducts::create([
-                'product_id' => $request->local_product_id,
-                'charity_id' => $request->charity_id,
-                'variantId' => $request->shopify_product_variant_id,
-                'qty' => $quantity
-            ]);
-
-            //generate email 
-
-            $data = [
-                "status" => 1,
-                "message" => "Product Successfully Assigned"
-            ];
-
-            //send email to charity and superadmin
-            $data['product_name'] = $request->product_name;
-            $data['product_quantity'] = $request->quantity;
-
-
             $product_make = array();
             $product_make[0]['title'] =  $request->product_name;
             $product_make[0]['quantity'] =  $request->quantity;
             $product_make[0]['variant_id'] =  $request->shopify_product_variant_id;
+            $product_make[0]['inventory_item_id'] = $productvariant->inventory_item_id;
             $product_make[0]['grams'] =  0;
             $product_make[0]['price'] = $productvariant->price;
             try {
                 //call shopify api and make an order on shopify store
                 $customer = "Charity Order Do not Proceed";
-                $product->craeteOrderOnShopifyStore($product_make, $customer);
+                $product->createOrderOnShopifyStore($product_make, $customer);
+
+
+                //now insert quantity product to charity table which is 
+                $assigning = AssignedCharitiesProducts::create([
+                    'product_id' => $request->local_product_id,
+                    'charity_id' => $request->charity_id,
+                    'variantId' => $request->shopify_product_variant_id,
+                    'qty' => $quantity
+                ]);
+
+                //generate email 
+
             } catch (Exception $x) {
-                return ["error", $x];
+
+                return ["error 1" => $x->getMessage()];
             }
             // get product image here = 
             $product_img = ProductImage::where("product_id", $request->local_product_id)->first();
@@ -460,6 +457,10 @@ class CharitiesController extends Controller
             $email = new  AssignProductToCharity($data);
             Mail::to($charityemail)->send($email);
 
+            $data = [
+                "status" => 1,
+                "message" => "Product Successfully Assigned"
+            ];
             return Response::json(array("success" => 1, "message" => "Product has been assigned to charity successfully"));
 
             //generate notification 
@@ -499,7 +500,7 @@ class CharitiesController extends Controller
                 $customer = "Charity Order Do not Proceed";
                 try {
                     //call shopify api and make an order on shopify store
-                    $retrun =   $product->craeteOrderOnShopifyStore($product_make, $customer);
+                    $retrun =   $product->createOrderOnShopifyStore($product_make, $customer);
                     if ($retrun == 1) {
                     } else {
                         $data_error = [
@@ -558,6 +559,24 @@ class CharitiesController extends Controller
      * @param request
      * @return view
      */
+    public function oldshow(Request $request)
+    {
+        return datatables()->of(charity::all())->addColumn('action', function ($row) {
+
+            $btn = '';
+
+            $btn = $btn . '<a href="' . Adminurl('productToCharity/') . $row['id'] . '" class="edit btn btn-primary btn-sm">assign products</a> <a href="' . route('charities.edit', $row["id"]) . '" class="edit btn btn-primary btn-sm">edit</a>';
+            $btn = $btn . '&nbsp; 
+            <form action="' . route('charities.destroy', $row["id"]) . '" method="POST" style="display: inline;"> 
+            ' . method_field("DELETE") . '
+            <input type="hidden" name="_token" id="csrf-token" value="' . csrf_token() . '" />
+
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Are You Sure Want to Delete?\')">delete</form>';
+
+            return $btn;
+        })->rawColumns(['action'])->make(true);
+    }
+
     public function show(Request $request)
     {
         return datatables()->of(charity::all())->addColumn('action', function ($row) {
@@ -566,16 +585,14 @@ class CharitiesController extends Controller
 
             $btn = $btn . '<a href="' . Adminurl('productToCharity/') . $row['id'] . '" class="edit btn btn-primary btn-sm">assign products</a> <a href="' . route('charities.edit', $row["id"]) . '" class="edit btn btn-primary btn-sm">edit</a>';
             $btn = $btn . '&nbsp; 
-            <form action="' . route('charities.destroy', $row["id"]) . '" method="POST"> 
+            <form action="' . route('charities.destroy', $row["id"]) . '" method="POST" style="display: inline;"> 
             ' . method_field("DELETE") . '
             <input type="hidden" name="_token" id="csrf-token" value="' . csrf_token() . '" />
-
-            <button type="submit" class="btn btn-danger" onclick="return confirm(\'Are You Sure Want to Delete?\')">delete</form>';
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm(\'Are You Sure Want to Delete?\')">delete</form>';
 
             return $btn;
         })->rawColumns(['action'])->make(true);
     }
-
 
     /**
      * Method 
@@ -682,5 +699,27 @@ class CharitiesController extends Controller
         $products =  $qry->get();
 
         echo json_encode(array("products" => $products));
+    }
+
+
+    /**
+     * Method 
+     * Method responsible to fetch charitires for reporting filter
+     * 
+     * Method: GET
+     * @param request
+     * @return view
+     */
+    public function getCharitiesForFilter(Request $request)
+    {
+        $q = "";
+        if ($request->q <> null) {
+            $q = $request->q;
+        }
+        $qry = charity::select("id", "charity_name as text");
+
+        $qry->where("charity_name", "like", $q . "%");
+        $charities =  $qry->get();
+        echo json_encode($charities);
     }
 }

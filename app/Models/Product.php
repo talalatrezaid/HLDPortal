@@ -205,7 +205,7 @@ class Product extends Model
      * Method: Responsible to create order on shopify store
      * Parameters products and users details
      */
-    function craeteOrderOnShopifyStore($products, $customer)
+    function oldcraeteOrderOnShopifyStore($products, $customer)
     {
         //get from database store connection 
         $store = Store::where("user_id", Auth::user()->id)->first();
@@ -267,6 +267,51 @@ class Product extends Model
             return curl_error($ch);
         } else {
             return 1;
+        }
+        curl_close($ch);
+    }
+
+    //after meeting with bilal nasir we have decided not to order on shopify only adjust the 
+    // product quantity in shopify store
+    function createOrderOnShopifyStore($products, $customer)
+    {
+
+        //agenda
+        //this function will generate an order on shopify
+        //when it's back from shopify i have to stop inserting to our portal or being updated on our portal 
+        // because this order is already being saved on our portal
+
+        //get from database store connection 
+        $store = Store::findorfail(14);
+
+        $api_key            = $store->api_key;
+        $api_password       = $store->api_password;
+        $api_domain_name    = $store->api_domain;
+        $base_url           = $store->base_url;   // "admin/api/2021-04"
+        //  $api_endpoint = '/products/' . $shopify_product_id . '.json?limit=1';
+
+        $inventory = [];
+        foreach ($products as $row) {
+            $inventory['inventory_item_id'] = $row['inventory_item_id'];
+            $inventory['available_adjustment'] = -$row['quantity'];
+            $inventory['location_id'] = "66110521585";
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://' . $api_domain_name . '/admin/api/2021-10/inventory_levels/adjust.json',);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($inventory));
+        $headers = array();
+        $headers[] = 'X-Shopify-Access-Token: ' . $api_password;
+        $headers[] = 'Content-Type: application/json';
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+            die();
         }
         curl_close($ch);
     }

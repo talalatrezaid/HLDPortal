@@ -71,7 +71,35 @@ class Orders extends Model
         "user_id",
         "is_charity_order"
     ];
+    public function get_all_orders($order_by, $sort, $search_keyword, $charity, $payment, $status, $date_from, $date_to, $per_page)
+    {
 
+
+        $order_query =  Orders::with(
+            'billing',
+            'shipping',
+            "payment",
+            "list_items",
+            "fullfilments",
+            "charities",
+            "customer"
+        );
+        if (strlen($search_keyword) > 0) {
+            $order_query->where("name", "like", $search_keyword . "%");
+        }
+        if (strlen($payment) > 0) {
+            $order_query->where("financial_status", "=", ucfirst($payment));
+        }
+        if (strlen($status) > 0) {
+
+            $order_query->where("fulfillment_status",  ucfirst($status));
+        }
+        if ($charity > -1) {
+            $order_query->where("charity_id", $charity);
+        }
+        $orders =  $order_query->orderby("created_at", "desc")->paginate($per_page);
+        return $orders;
+    }
     public function check_order_exists($shopify_order_id)
     {
         //in order table order_id mean shopify order id and id mean local order id
@@ -87,7 +115,7 @@ class Orders extends Model
 
     public function customer()
     {
-        return $this->hasMany(Customers::class, 'user_id', 'id');
+        return $this->belongsTo(Customers::class, 'customer_id', 'id');
     }
 
     public function donations()

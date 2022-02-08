@@ -230,6 +230,7 @@
 
                 } else {
                     alert(data.message);
+                    return false;
                     window.location.reload();
                 }
             });

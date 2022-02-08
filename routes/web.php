@@ -88,50 +88,31 @@ Route::group([
     //Route::post('/insert_user', [AdminController::class, 'insert']);//insert user
     Route::resource('/charities', CharitiesController::class); //create user
     Route::get('/orderdetail/{id}', [OrdersController::class, "orderDetail"]); //create order
-
     Route::resource('/orders', OrdersController::class); //create order
-
+    Route::post('/orders', [OrdersController::class, 'index']); //create order
+    Route::get('/exportorders', [OrdersController::class, 'exportorders']); //create order
     Route::resource('/settings', PortalSettingsController::class); //create order
-
     Route::get('/notificationscount', [NotificationsController::class, "notifications_count"]); //create order
-
     Route::get('/notifications', [NotificationsController::class, "index"]); //create order
     Route::post('/readnotifications/{id}', [NotificationsController::class, "readnotifications"]); //create order
-
     Route::get('/ordercomplete/{id}', [OrdersController::class, "orderComplete"]); //create order
-
     Route::put('/updatesettings/{id}', [PortalSettingsController::class, "update"]); //create order
 
     //get assigned products for datatable 
     Route::get('/charities/{id}/assigned_products', [CharitiesController::class, 'getAssignedProductsForDataTable']); //create user
 
     //show assign product form
-    Route::get('productToCharity/{id}', [CharitiesController::class, 'assignproducts']);
+    Route::get('getCharitiesForFilter', [CharitiesController::class, 'getCharitiesForFilter']);
+    Route::get('productToCharity/{id}', [CharitiesController::class, 'assignproducts'])->name("getCharitiesForFilter");
     Route::get('getProuctsForCharity', [CharitiesController::class, 'getProuctsForCharity']);
     Route::post('thisproductassigntocharity', [CharitiesController::class, 'assignthisproducttocharity']);
     Route::delete('assignedproductdestroy/{id}', [CharitiesController::class, 'assignedproductdestroy'])->name("assignedproductdestroy");
-
     Route::get('/logout', [AdminController::class, 'logout']); //logout user
     Route::get('/users/edit/{id}', [AdminController::class, 'edituser']);
     Route::post('/update-user-data/{id}', [AdminController::class, 'updateuserdata']);
-
     Route::post('/update-user-password/{id}', [AdminController::class, 'updateuserpassword']);
     Route::get('/user/delete/{id}', [AdminController::class, 'deleteuser']);
     Route::post('/updateStatus', [AdminController::class, 'updateStatus']);
     //Website Settings Page
 
 });
-
-
-
-// Route::get('/{slug}',   [PageController::class, 'showslug']);
-// MailTrap Test Code
-
-// Route::get('/sendmail', function (Request $request) {
-
-// 	 Mail::to($email)
-//         		->send(new MailTesting($name,$email,$link));
-//     return 'A message has been sent to Mailtrap!';
-// });
-
-// Mail Trap End
