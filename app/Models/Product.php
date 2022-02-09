@@ -183,7 +183,7 @@ class Product extends Model
         curl_setopt($ch, CURLOPT_URL, 'https://' . $api_domain_name . '/admin/api/2021-10/inventory_levels/adjust.json',);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        $order['location_id'] = "66110521585";
+        $order['location_id'] = "61530767557";
         $order['inventory_item_id'] = $inventory->inventory_item_id;
         $order['available_adjustment'] = $quantity;
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($order));
@@ -294,7 +294,7 @@ class Product extends Model
         foreach ($products as $row) {
             $inventory['inventory_item_id'] = $row['inventory_item_id'];
             $inventory['available_adjustment'] = -$row['quantity'];
-            $inventory['location_id'] = "66110521585";
+            $inventory['location_id'] = "61530767557";
         }
 
         $ch = curl_init();
