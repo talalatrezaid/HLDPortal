@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Orders;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +21,7 @@ class CharityDonation extends Model
         "status"
     ];
 
+    public $timestamps = true;
 
     //insert any kind of order's Donation detail whether it coming from shopify or local db every order should have this detail
     public function insertDonationDetail($order_id_local_db, $data)

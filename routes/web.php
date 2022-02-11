@@ -91,6 +91,11 @@ Route::group([
     Route::resource('/orders', OrdersController::class); //create order
     Route::post('/orders', [OrdersController::class, 'index']); //create order
     Route::get('/exportorders', [OrdersController::class, 'exportorders']); //create order
+    Route::get('/exportcharityorders', [OrdersController::class, 'exportordersOnlyCharityProducts']); //create order
+    Route::get('/exportordersAdditionalProducts', [OrdersController::class, 'exportordersAdditionalProducts']); //create order
+
+
+
     Route::resource('/settings', PortalSettingsController::class); //create order
     Route::get('/notificationscount', [NotificationsController::class, "notifications_count"]); //create order
     Route::get('/notifications', [NotificationsController::class, "index"]); //create order

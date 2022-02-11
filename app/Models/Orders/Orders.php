@@ -3,7 +3,7 @@
 namespace App\Models\Orders;
 
 use App\Models\charity;
-use CharityDonation;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -73,8 +73,6 @@ class Orders extends Model
     ];
     public function get_all_orders($order_by, $sort, $search_keyword, $charity, $payment, $status, $date_from, $date_to, $per_page)
     {
-
-
         $order_query =  Orders::with(
             'billing',
             'shipping',
@@ -82,7 +80,8 @@ class Orders extends Model
             "list_items",
             "fullfilments",
             "charities",
-            "customer"
+            "customer",
+            "donations"
         );
         if (strlen($search_keyword) > 0) {
             $order_query->where("name", "like", $search_keyword . "%");
@@ -97,9 +96,19 @@ class Orders extends Model
         if ($charity > -1) {
             $order_query->where("charity_id", $charity);
         }
+
+        if (strlen($date_from)) {
+            $order_query->where('created_at', '>=', $date_from);
+        }
+
+
+        if (strlen($date_to)) {
+            $order_query->where('created_at', '<=', $date_to);
+        }
         $orders =  $order_query->orderby("created_at", "desc")->paginate($per_page);
         return $orders;
     }
+
     public function check_order_exists($shopify_order_id)
     {
         //in order table order_id mean shopify order id and id mean local order id
@@ -118,10 +127,6 @@ class Orders extends Model
         return $this->belongsTo(Customers::class, 'customer_id', 'id');
     }
 
-    public function donations()
-    {
-        return $this->hasMany(CharityDonation::class, 'id', 'order_id');
-    }
 
     public function billing()
     {
@@ -154,25 +159,13 @@ class Orders extends Model
         return $this->hasMany(OrderRefunds::class, 'order_id', 'id');
     }
 
+    public function donations()
+    {
+        return $this->hasMany(CharityDonation::class, 'order_id', 'id');
+    }
+
     public function charities()
     {
         return $this->belongsTo(charity::class, 'charity_id', 'id');
     }
-    //it should be comma seperated
-    // i have listed all attributes which i got in this date 
-    // if in future there will be more attributes please add by yourself
-    // in future you can make this field i am commenting it because i don't need it in my database 
-    // because in current situation we are handlling only UK orders for only holylanddates store 
-    //$table->string("current_total_duties_set");  // shopify
-    //$table->string("total_discounts_set");  // shopify
-    //$table->string("current_total_price_set");  // shopify
-    //$table->string("current_subtotal_price_set");  // shopify
-    //$table->string("current_total_tax_set");  // shopify
-    //$table->string("discount_codes");  // shopify
-    //$table->string("note_attributes");  // shopify
-    //$table->string("original_total_duties_set");  // shopify
-    //$table->string("total_line_items_price_set");  // shopify
-    //$table->string("total_price_set");  // shopify
-    //$table->string("total_tax_set");  // shopify
-    //$table->string("total_shipping_price_set");  // shopify
 }

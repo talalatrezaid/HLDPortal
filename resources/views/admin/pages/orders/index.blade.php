@@ -37,6 +37,36 @@
                 <div>
                     <h2>Filters</h2s>
                 </div>
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="input-group date" id="datetimepicker1">
+                            <input type="date" name="from_date" class="form-control">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        <div class="input-group date" id="datetimepicker1">
+                            <input type="date" name="to_date" class="form-control">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Export
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#" onclick="export_with_filters()">Export Charity Products</a>
+                                <a class="dropdown-item" href="#" onclick="export_additional_products_with_filters()">Export Additional Products</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
                 <div class="row p-1">
 
                     <div class="col-md-2 col-lg-2">
@@ -77,7 +107,8 @@
                     <div class="col-md-3"> <label>Action</label><br />
                         <input type="submit" name="submit" value="Apply" class="btn btn-sm btn-success mr-2" />
                         <input type="reset" value="Reset" class="btn btn-sm btn-danger mr-2" />
-                        <input type="button" onclick="export_with_filters()" value="Export" class="btn btn-sm btn-primary mr-2" />
+
+
                     </div>
 
                 </div>
@@ -415,7 +446,12 @@
 
     function export_with_filters() {
         let form_filter = $("#form_filter").serialize();
-        window.open("<?php echo Adminurl("exportorders?") ?>" + form_filter);
+        window.open("<?php echo Adminurl("exportcharityorders?") ?>" + form_filter);
+    }
+
+    function export_additional_products_with_filters() {
+        let form_filter = $("#form_filter").serialize();
+        window.open("<?php echo Adminurl("exportordersAdditionalProducts?") ?>" + form_filter);
     }
 </script>
 @endsection
