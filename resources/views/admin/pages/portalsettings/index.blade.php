@@ -133,6 +133,26 @@
                         <input class="form-control" type="email" name="website_notify_email" value="<?php echo $settings->website_notify_email; ?>">
                     </div>
 
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Shipping Charges</label>
+                        <input class="form-control" type="number" pattern="^\d*(\.\d{0,2})?$" name="shipping_charges" Step=".01" value="<?php echo $settings->shipping_charges; ?>">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Google Analytics Id(UA-XXXXX-Y)</label>
+                        <input class="form-control" type="text" name="google_analytics_id" value="<?php echo $settings->google_analytics_id; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Google Tag Manager Id (GTM-XXXXXX)</label>
+                        <input class="form-control" type="text" name="google_tag_manger_id" value="<?php echo $settings->google_tag_manger_id; ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Facebook Pixel Code</label>
+                        <textarea class="form-control" type="text" name="facebook_pixel_script"><?php echo $settings->facebook_pixel_script; ?></textarea>
+                    </div>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </form>
             </div>

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\shopify;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AssignProductToCharity;
 use App\Mail\ProductQuantityUpdatedEmail;
+use App\Models\AssignedCharitiesProducts;
 use App\Models\MappedCategory;
 use App\Models\Orders\Customers;
 use App\Models\Orders\OrderBillingAddress;
@@ -12,6 +14,7 @@ use App\Models\Orders\OrderListOfProducts;
 use App\Models\Orders\OrderPaymentDetails;
 use App\Models\Orders\Orders;
 use App\Models\Orders\OrderShippingAddress;
+use App\Models\PortalSettings;
 use App\Models\Product;
 use App\Models\Product_ProductCategory;
 use App\Models\ProductCategory;
@@ -21,16 +24,19 @@ use App\Models\ProductImage;
 use App\Models\ProductInfoHexCode;
 use App\Models\ProductOption;
 use App\Models\ProductVariant;
+use App\Models\Settings;
 use App\Models\Store;
 use App\Models\StoreFrontCategory;
 use App\Models\VariantMeta;
 use Barryvdh\Debugbar\Facade;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use SebastianBergmann\Environment\Console;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 use OrderListProducts;
 
 define('SHOPIFY_APP_SECRET', env('SHOPIFY_APP_SECRET'));
@@ -373,8 +379,15 @@ class WebhookController extends Controller
                 $charity_product['product_quantity'] = $available_quantity;
                 //email here
                 $email = new  ProductQuantityUpdatedEmail($charity_product);
-                Mail::to("informtalal@gmail.com")->send($email);
-                Log::info("product quanity updated successfully");
+                //get superadmin email from settings
+                $settingemail = PortalSettings::select("website_notify_email")->where("id", 1)->first();
+                try {
+                    Mail::to($settingemail->website_notify_email)->send($email);
+                    Log::info("product quanity updated successfully");
+                } catch (Exception $x) {
+                    Log::info("product quanity update email from webshook error on next link Line:390");
+                    Log::info(array("error" => $x));
+                }
             }
         } else {
             // if there is any issue
@@ -771,59 +784,69 @@ class WebhookController extends Controller
 
                 $saved_product_id = $saved_product_data->id;
 
-                // start removing images from storage
-                $images_data = ProductImage::where('product_id', $saved_product_id)->get()->toArray();
+                //check if this product assigned to any charity 
+                $count = AssignedCharitiesProducts::where("product_id", $saved_product_id)->count();
+                $saved_product_data->status = "draft";
+                $saved_product_data->save();
+                error_log("This Product assigned to charity so we have to deactivate it");
 
-                if ($images_data) {
 
-                    foreach ($images_data as $image_data) {
+                if ($count > 0) {
+                } else {
+                    // start removing images from storage
+                    $images_data = ProductImage::where('product_id', $saved_product_id)->get()->toArray();
 
-                        // get file name
-                        $name = substr($image_data['source'], strrpos($image_data['source'], '/') + 1);
+                    if ($images_data) {
 
-                        // remove file
-                        Storage::delete('public/product_images/' . $name);
+                        foreach ($images_data as $image_data) {
+
+                            // get file name
+                            $name = substr($image_data['source'], strrpos($image_data['source'], '/') + 1);
+
+                            // remove file
+                            Storage::delete('public/product_images/' . $name);
+                        }
                     }
+                    // end removing images from storage
+
+
+                    $deleted_options    = ProductOption::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Option on delete product: " . $deleted_options);
+
+                    $deleted_images     = ProductImage::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Images on delete product: " . $deleted_images);
+
+                    $deleted_variants   = ProductVariant::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Variants on delete product: " . $deleted_variants);
+
+                    $deleted_variant_meta   = VariantMeta::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Variants meta Product on delete product: " . $deleted_variant_meta);
+
+                    $deleted_extra_details   = ProductExtraDetail::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Product Extra Details on delete product: " . $deleted_extra_details);
+
+                    // start deleting product custom information record
+
+                    // get the product custom information id to delete record from product_info_hex_codes table as this table has association
+                    $product_custom_info = ProductCustomInformation::where('product_id', $saved_product_id)->first();
+                    $product_custom_info_id = $product_custom_info->id;
+
+                    if ($product_custom_info_id) {
+                        // delete product_info_hex_codes record from DB
+                        ProductInfoHexCode::where('product_custom_information_id', $product_custom_info_id)->delete();
+                    }
+
+                    $deleted_custom_info = ProductCustomInformation::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Product Custom Information on delete product: " . $deleted_custom_info);
+
+                    // end deleting product custom information record
+
+                    $deleted_product_category_relation   = Product_ProductCategory::where('product_id', $saved_product_id)->delete();
+                    error_log("Delete Product and product category relation on delete product: " . $deleted_product_category_relation);
+
+                    $deleted_product   = Product::where('id', $saved_product_id)->delete();
+                    error_log("Delete Actual Product on delete product: " . $deleted_product);
                 }
-                // end removing images from storage
-
-
-                $deleted_options    = ProductOption::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Option on delete product: " . $deleted_options);
-
-                $deleted_images     = ProductImage::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Images on delete product: " . $deleted_images);
-
-                $deleted_variants   = ProductVariant::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Variants on delete product: " . $deleted_variants);
-
-                $deleted_variant_meta   = VariantMeta::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Variants meta Product on delete product: " . $deleted_variant_meta);
-
-                $deleted_extra_details   = ProductExtraDetail::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Product Extra Details on delete product: " . $deleted_extra_details);
-
-                // start deleting product custom information record
-
-                // get the product custom information id to delete record from product_info_hex_codes table as this table has association
-                $product_custom_info = ProductCustomInformation::where('product_id', $saved_product_id)->first();
-                $product_custom_info_id = $product_custom_info->id;
-
-                if ($product_custom_info_id) {
-                    // delete product_info_hex_codes record from DB
-                    ProductInfoHexCode::where('product_custom_information_id', $product_custom_info_id)->delete();
-                }
-
-                $deleted_custom_info = ProductCustomInformation::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Product Custom Information on delete product: " . $deleted_custom_info);
-
-                // end deleting product custom information record
-
-                $deleted_product_category_relation   = Product_ProductCategory::where('product_id', $saved_product_id)->delete();
-                error_log("Delete Product and product category relation on delete product: " . $deleted_product_category_relation);
-
-                $deleted_product   = Product::where('id', $saved_product_id)->delete();
-                error_log("Delete Actual Product on delete product: " . $deleted_product);
             } else {
 
                 error_log("Product not found on update product");

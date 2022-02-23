@@ -1,6 +1,53 @@
 @extends('admin.layouts.app')
 @section('content')
 <style>
+    .rate {
+        float: left;
+        height: 46px;
+        padding: 0 10px;
+    }
+
+    #feedback_message {
+        resize: none;
+    }
+
+    .rate:not(:checked)>input {
+        position: absolute;
+        opacity: 0;
+        /* top: -9999px; */
+    }
+
+    .rate:not(:checked)>label {
+        float: right;
+        width: 1em;
+        overflow: hidden;
+        white-space: nowrap;
+        cursor: pointer;
+        font-size: 30px;
+        color: #ccc;
+    }
+
+    .rate:not(:checked)>label:before {
+        content: '★ ';
+    }
+
+    .rate>input:checked~label {
+        color: #ffc700;
+    }
+
+    .rate:not(:checked)>label:hover,
+    .rate:not(:checked)>label:hover~label {
+        color: #deb217;
+    }
+
+    .rate>input:checked+label:hover,
+    .rate>input:checked+label:hover~label,
+    .rate>input:checked~label:hover,
+    .rate>input:checked~label:hover~label,
+    .rate>label:hover~input:checked~label {
+        color: #c59b08;
+    }
+
     #panel,
     #flip {
         padding: 5px;
@@ -354,8 +401,8 @@
                                         <div class="row mt-5 pt-2 last_det">
                                             <div class="col-7 text-left">
                                                 <p>£<?php echo $order->current_subtotal_price; ?></p>
-                                                <p><?php echo $order->total_weight; ?></p>
-                                                <p><?php echo $order->total_tax; ?></p>
+                                                <p>£<?php echo $order->shipping_charges; ?></p>
+                                                <p>£<?php echo $order->total_tax; ?></p>
                                             </div>
                                         </div>
                                     </div>
@@ -380,6 +427,41 @@
                                 </div>
                             </div>
 
+                            <?php if ($order->rate > 0) {
+                                $rate = $order->rate;
+                                $feedback = $order->feedback;
+                            ?>
+                                <div class="card scnd_left_paid_view p-2 my-4">
+
+                                    <span class="top_identity">Your feedback is important to us!</span>
+                                    <div class="row mt-3 no-gutters">
+                                        <div class="rate">
+                                            <input type="radio" id="star5" name="rate" value="5" <?php if ($rate == 5) echo "checked"; ?> disabled />
+                                            <label for="star5" title="text">5 stars</label>
+                                            <input type="radio" id="star4" name="rate" <?php if ($rate == 4) echo "checked"; ?> value="4" disabled />
+                                            <label for="star4" title="text">4 stars</label>
+                                            <input type="radio" id="star3" name="rate" <?php if ($rate == 3) echo "checked"; ?> value="3" disabled />
+                                            <label for="star3" title="text">3 stars</label>
+                                            <input type="radio" id="star2" name="rate" <?php if ($rate == 2) echo "checked"; ?> value="2" disabled />
+                                            <label for="star2" title="text">2 stars</label>
+                                            <input type="radio" id="star1" name="rate" <?php if ($rate == 1) echo "checked"; ?> value="1" disabled />
+                                            <label for="star1" title="text">1 star</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="8" name="feedback_message" disabled id="feedback_message" placeholder="Give your feedback">
+                                            <?php
+                                            echo trim($feedback); ?>
+                                             </textarea>
+                                    </div>
+
+
+                                </div>
+                            <?php
+
+                            }
+                            ?>
 
                         </div>
 

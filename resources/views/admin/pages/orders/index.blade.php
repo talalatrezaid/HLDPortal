@@ -1,6 +1,53 @@
 @extends('admin.layouts.app')
 @section('content')
 <style>
+    .rate {
+        float: left;
+        height: 46px;
+        padding: 0 10px;
+    }
+
+    #feedback_message {
+        resize: none;
+    }
+
+    .rate:not(:checked)>input {
+        position: absolute;
+        opacity: 0;
+        /* top: -9999px; */
+    }
+
+    .rate:not(:checked)>label {
+        float: right;
+        width: 1em;
+        overflow: hidden;
+        white-space: nowrap;
+        cursor: pointer;
+        font-size: 30px;
+        color: #ccc;
+    }
+
+    .rate:not(:checked)>label:before {
+        content: '★ ';
+    }
+
+    .rate>input:checked~label {
+        color: #ffc700;
+    }
+
+    .rate:not(:checked)>label:hover,
+    .rate:not(:checked)>label:hover~label {
+        color: #deb217;
+    }
+
+    .rate>input:checked+label:hover,
+    .rate>input:checked+label:hover~label,
+    .rate>input:checked~label:hover,
+    .rate>input:checked~label:hover~label,
+    .rate>label:hover~input:checked~label {
+        color: #c59b08;
+    }
+
     .form-control {
         width: auto;
     }
@@ -62,13 +109,13 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" href="#" onclick="export_with_filters()">Export Charity Products</a>
                                 <a class="dropdown-item" href="#" onclick="export_additional_products_with_filters()">Export Additional Products</a>
+                                <a class="dropdown-item" href="#" onclick="exportordersForHermes()">Export File For Hermes</a>
                             </div>
                         </div>
                     </div>
 
                 </div>
                 <div class="row p-1">
-
                     <div class="col-md-2 col-lg-2">
                         <label>Search</label><br />
                         <input value="<?php echo $search_keyword; ?>" placeholder="Search" class="form-control" style="width: 100%;" id="search" name="search" />
@@ -140,6 +187,7 @@
                             <th scope="col">Payment</th>
                             <th scope="col">Charity</th>
                             <th scope="col">Status</th>
+                            <th scope="col">Rating</th>
                             <th scope="col">Action</th>
                             <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
 
@@ -161,7 +209,10 @@
                                 {{-- <td scope="row">--}}
                                 {{-- <input  type="checkbox" value="{{$product->id}}" data-product_name="{{$product->title}}" id="flexCheckDefault" />--}}
                                 {{-- </td>--}}
-                                <td class="product_name_data">{{$product->id}}</td>
+                                <td class="product_name_data">{{$product->id}}
+                                    <br />
+                                    {{$product->created_at}}
+                                </td>
                                 <td>{{$product->name ?? ''}}</td>
                                 <td>£{{$product->total_price ?? '0'}}
                                     <br />
@@ -195,8 +246,26 @@
                                         <span class="badge badge-sm badge-danger">Pending</span>
                                     <?php } ?>
                                 </td>
-
-                                <td><a href="<?php echo Adminurl('orderdetail/'); ?>{{$product->id}}">View Detail</a>
+                                <td>
+                                    <div class="rate">
+                                        <input type="radio" id="star5" name="rate" value="5" <?php if ($product->rate == 5) echo "checked"; ?> disabled />
+                                        <label for="star5" title="text">5 stars</label>
+                                        <input type="radio" id="star4" name="rate" <?php if ($product->rate == 4) echo "checked"; ?> value="4" disabled />
+                                        <label for="star4" title="text">4 stars</label>
+                                        <input type="radio" id="star3" name="rate" <?php if ($product->rate == 3) echo "checked"; ?> value="3" disabled />
+                                        <label for="star3" title="text">3 stars</label>
+                                        <input type="radio" id="star2" name="rate" <?php if ($product->rate == 2) echo "checked"; ?> value="2" disabled />
+                                        <label for="star2" title="text">2 stars</label>
+                                        <input type="radio" id="star1" name="rate" <?php if ($product->rate == 1) echo "checked"; ?> value="1" disabled />
+                                        <label for="star1" title="text">1 star</label>
+                                    </div>
+                                </td>
+                                <td><a href="<?php echo Adminurl('orderdetail/'); ?>{{$product->id}}">View Detail</a> <br />
+                                    Hermes Export: <?php if ($product->is_exported_for_hermes == 0) {
+                                                        echo "No";
+                                                    } else {
+                                                        echo "YES";
+                                                    } ?>
                                     {{-- - <a href="javascript:void(0)" class="upload_product_to_storefront" id="{{$product->id}}" data-upload_product_id="{{$product->id}}">--}}
                                     {{-- @if($product->is_uploaded_to_storefront == "1")--}}
                                     {{-- Uploaded--}}
@@ -452,6 +521,11 @@
     function export_additional_products_with_filters() {
         let form_filter = $("#form_filter").serialize();
         window.open("<?php echo Adminurl("exportordersAdditionalProducts?") ?>" + form_filter);
+    }
+
+    function exportordersForHermes() {
+        let form_filter = $("#form_filter").serialize();
+        window.open("<?php echo Adminurl("exportordersForHermes?") ?>" + form_filter);
     }
 </script>
 @endsection

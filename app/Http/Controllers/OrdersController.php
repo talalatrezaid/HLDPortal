@@ -157,9 +157,22 @@ class OrdersController extends Controller
             "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
             "Expires" => "0"
         );
-        $columns = ["Order #", "Customer Name", "Customer Email", "Customer Contact", "Charity Name", "Total Price", "Payment Status", "Order Status", "Date"];
+        $columns = [
+            "Order #",
+            "Customer Name",
+            "Customer Email",
+            "Customer Contact",
+            "Charity Name",
+            "Total Price",
+            "Payment Status",
+            "Order Status",
+            "Date"
+        ];
 
-        $callback = function () use ($aorders, $columns) {
+        $callback = function () use (
+            $aorders,
+            $columns
+        ) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
@@ -427,16 +440,16 @@ class OrdersController extends Controller
 
 
         //order details sheet header
-        $worksheet->write(0, 0, "Order #");
-        $worksheet->write(0, 1, "Customer Name");
-        $worksheet->write(0, 2, "Customer Email");
-        $worksheet->write(0, 3, "Customer Contact");
-        $worksheet->write(0, 4, "Charity Name");
-        $worksheet->write(0, 5, "Total Products Quantity");
-        $worksheet->write(0, 6, "Total Products Price");
-        $worksheet->write(0, 7, "Fullfilment Charges");
-        $worksheet->write(0, 8, "Net. Total");
-        $worksheet->write(0, 9, "Zakat");
+        $worksheet->write(0, 0,  "Order #");
+        $worksheet->write(0, 1,  "Customer Name");
+        $worksheet->write(0, 2,  "Customer Email");
+        $worksheet->write(0, 3,  "Customer Contact");
+        $worksheet->write(0, 4,  "Charity Name");
+        $worksheet->write(0, 5,  "Total Products Quantity");
+        $worksheet->write(0, 6,  "Total Products Price");
+        $worksheet->write(0, 7,  "Fullfilment Charges");
+        $worksheet->write(0, 8,  "Net. Total");
+        $worksheet->write(0, 9,  "Zakat");
         $worksheet->write(0, 10, "Sadqah");
         $worksheet->write(0, 11, "Lilah");
         $worksheet->write(0, 12, "Other");
@@ -686,7 +699,7 @@ class OrdersController extends Controller
         return Response::stream($callback, 200, $headers);
     }
 
-    //this function will generate
+    //this function will generate additonal products orders csv
     public function exportordersAdditionalProducts(Request $request)
     {
         if (Auth::user() == null) {
@@ -874,6 +887,269 @@ class OrdersController extends Controller
 
         $workbook->close();
     }
+
+
+    //this function will generate a sheet for hermes delivery
+    public function exportordersForHermes(Request $request)
+    {
+        if (Auth::user() == null) {
+            return view('admin.pages.account.login');
+        }
+        $charities = charity::where("is_active", 1)->get();
+        //filters options 
+        $order_by = "created_at"; // column name
+        $sort = "desc"; // ascending desending order
+        $search_keyword = ""; // any keyword
+        $charity = -1; // 0 will be used for shopify orders
+        $payment = "";
+        $status = "";
+        $per_page = 10;
+        $date_from = ""; //date range
+        $date_to = ""; //date to
+        $order_ids = [];
+
+        if (isset($_GET['search']))
+            $search_keyword = $request->search;
+        if (isset($_GET['charity']))
+            $charity = $request->charity;
+        if (isset($_GET['payment']))
+            $payment = $request->payment;
+        if (isset($_GET['per_page']))
+            $per_page = $request->per_page;
+        if (isset($_GET['status']))
+            $status = $request->status;
+
+        if ($status == "unfullfilled") {
+            $status = "Unfullfilled";
+        }
+
+        if ($status == "fullfilled") {
+            $status = "Completed";
+        }
+
+        if (isset($_GET['from_date'])) {
+            $date_from = $request->from_date;
+            if (strlen($date_from) > 0)
+                $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
+        }
+        if (isset($_GET['to_date'])) {
+            $date_to = $request->to_date;
+            if (strlen($date_to) > 0)
+                $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
+        }
+
+        $data['search_keyword'] = $search_keyword;
+        $data['charity'] = $charity;
+        $data['payment'] = $payment;
+        $data['per_page'] = $per_page;
+        $data['status'] = $status;
+
+
+        $orders = new Orders();
+        //   DB::enableQueryLog();
+
+        $aorders = $orders->get_all_orders($order_by, $sort, $search_keyword, $charity, $payment, $status, $date_from, $date_to, $per_page);
+
+        $fields = [];
+        $index = 0;
+        $csv = 'Hermes File.csv';
+        $headers = array(
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=Hermes Orders.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        );
+
+        $columns = [
+            "Address_line_1",
+            "Address_line_2",
+            "Address_line_3",
+            "Address_line_4",
+            "Postcode",
+            "First_name",
+            "Last_name",
+            "Email",
+            "Weight(Kg)",
+            "Compensation(£)",
+            "Signature(y/n)",
+            "Reference",
+            "Contents",
+            "Parcel_value(£)",
+            "Delivery_phone",
+            "Delivery_safe_place",
+            "Delivery_instructions",
+            "Service",
+        ];
+
+        $callback = function () use ($aorders, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            $i = 0;
+            foreach ($aorders as $row) {
+
+                $order_ids[$i++] = $row->id;
+
+                $fields = [
+                    $row->shipping[0]->address1,
+                    $row->shipping[0]->address2,
+                    $row->shipping[0]->city,
+                    "", //address 4
+                    $row->shipping[0]->zip,
+                    $row->customer->first_name,
+                    $row->customer->last_name,
+                    $row->email,
+                    $row->total_weight, //weight
+                    utf8_decode("20£"), //compensation
+                    "N", //signatiure
+                    "Holy Land Dates", //reference
+                    "Dates", //contents
+                    utf8_decode($row->total_products_amount . "£"),
+                    $row->phone,
+                    "", "", ""
+                ];
+
+                fputcsv($file, $fields);
+            }
+
+            DB::table("orders")->whereIn("id", $order_ids)->update(['is_exported_for_hermes' => 1]);
+
+
+
+            fclose($file);
+        };
+        return Response::stream($callback, 200, $headers);
+    }
+
+
+    //this function will generate a sheet for hermes delivery
+    public function exportordersForHermesAndUpdateFlag(Request $request)
+    {
+        if (Auth::user() == null) {
+            return view('admin.pages.account.login');
+        }
+        $charities = charity::where("is_active", 1)->get();
+        //filters options 
+        $order_by = "created_at"; // column name
+        $sort = "desc"; // ascending desending order
+        $search_keyword = ""; // any keyword
+        $charity = -1; // 0 will be used for shopify orders
+        $payment = "";
+        $status = "";
+        $per_page = 10;
+        $date_from = ""; //date range
+        $date_to = ""; //date to
+        $order_ids = [];
+        if (isset($_GET['search']))
+            $search_keyword = $request->search;
+        if (isset($_GET['charity']))
+            $charity = $request->charity;
+        if (isset($_GET['payment']))
+            $payment = $request->payment;
+        if (isset($_GET['per_page']))
+            $per_page = $request->per_page;
+        if (isset($_GET['status']))
+            $status = $request->status;
+
+        if ($status == "unfullfilled") {
+            $status = "Unfullfilled";
+        }
+
+        if ($status == "fullfilled") {
+            $status = "Completed";
+        }
+
+        if (isset($_GET['from_date'])) {
+            $date_from = $request->from_date;
+            if (strlen($date_from) > 0)
+                $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
+        }
+        if (isset($_GET['to_date'])) {
+            $date_to = $request->to_date;
+            if (strlen($date_to) > 0)
+                $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
+        }
+
+        $data['search_keyword'] = $search_keyword;
+        $data['charity'] = $charity;
+        $data['payment'] = $payment;
+        $data['per_page'] = $per_page;
+        $data['status'] = $status;
+
+
+        $orders = new Orders();
+        //   DB::enableQueryLog();
+
+        $aorders = $orders->get_all_orders($order_by, $sort, $search_keyword, $charity, $payment, $status, $date_from, $date_to, $per_page);
+
+        $fields = [];
+        $index = 0;
+        $csv = 'Hermes File.csv';
+        $headers = array(
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=Hermes Orders.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        );
+
+        $columns = [
+            "Address_line_1",
+            "Address_line_2",
+            "Address_line_3",
+            "Address_line_4",
+            "Postcode",
+            "First_name",
+            "Last_name",
+            "Email",
+            "Weight(Kg)",
+            utf8_decode("Compensation(£)"),
+            "Signature(y/n)",
+            "Reference",
+            "Contents",
+            utf8_decode("Parcel_value(£)"),
+            "Delivery_phone",
+            "Delivery_safe_place",
+            "Delivery_instructions",
+            "Service",
+        ];
+
+        $callback = function () use ($aorders, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($aorders as $row) {
+
+                array_push($order_ids, $row->id);
+
+                $fields = [
+                    $row->shipping[0]->address1,
+                    $row->shipping[0]->address2,
+                    $row->shipping[0]->city,
+                    "", //address 4
+                    $row->shipping[0]->zip,
+                    $row->customer->first_name,
+                    $row->customer->last_name,
+                    $row->email,
+                    $row->total_weight, //weight
+                    utf8_decode("20£"), //compensation
+                    "N", //signatiure
+                    "Holy Land Dates", //reference
+                    "Dates", //contents
+                    utf8_decode($row->total_products_amount . "£"),
+                    $row->phone,
+                    "", "", ""
+                ];
+
+                fputcsv($file, $fields);
+            }
+            DB::table("orders")->whereIn("id", $order_ids)->update(['is_exported_for_hermes' => 1]);
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -930,22 +1206,22 @@ class OrdersController extends Controller
     {
         //
         if (Auth::user() == null) {
-
             return view('admin.pages.account.login');
         }
-
         $orders = Orders::findorfail($id);
+        $hash = password_hash($id . "Rezaid" . $orders->email, PASSWORD_DEFAULT);
         if (strtolower($orders->fulfillment_status) == "completed") {
         }
-
+        $orders->order_verification_link = $hash;
         $orders->fulfillment_status = "Completed";
         $orders->save();
-
+        $charity_user_name = "";
+        $charity_url = "";
         //get this charity email
         if ($orders->charity_id > 0) {
             //charity email 
             $charity = charity::where("id", $orders->charity_id)->first();
-
+            $charity_user_name = $charity->user_name;
             $charityemail = $charity->email;
             $data['order_no'] = $id;
             $email = new  OrderCompleteEmail($data);
@@ -959,11 +1235,12 @@ class OrdersController extends Controller
         Mail::to($superadmin)->send($email);
 
         //get customer email
-        if ($orders->customer_id > 0) {
+        if (strlen($orders->email) > 0) {
             //get customer email
             $email = $orders->email;
-
             $data['order_no'] = $id;
+            //charity url feedback/orderid encrypted/ email encrypted/
+            $data['order_feedback_link'] = "https://" . $charity_user_name . ".datesfrompalestine.com/orderfeedback/" . base64_encode($hash);
             $emaildata = new  OrderCompleteEmail($data);
             Mail::to($email)->send($emaildata);
         }
@@ -978,7 +1255,6 @@ class OrdersController extends Controller
         }
 
         $data = Orders::where("id", $id)->with('billing', 'shipping', "payment", "list_items", "fullfilments", "charities")->first();
-
         return view('admin.pages.orders.detail', [
             'order' => $data
         ]);

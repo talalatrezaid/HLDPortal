@@ -93,6 +93,7 @@ Route::group([
     Route::get('/exportorders', [OrdersController::class, 'exportorders']); //create order
     Route::get('/exportcharityorders', [OrdersController::class, 'exportordersOnlyCharityProducts']); //create order
     Route::get('/exportordersAdditionalProducts', [OrdersController::class, 'exportordersAdditionalProducts']); //create order
+    Route::get('/exportordersForHermes', [OrdersController::class, 'exportordersForHermes']); //create order
 
 
 

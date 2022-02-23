@@ -79,7 +79,7 @@ class CharitiesController extends Controller
             //send email here first
 
             // create a home page for this charity 
-            $values = array('page_template' => 'home', 'page_template' => 'Home', "charity_id" => $charity->id);
+            $values = array('page_template' => 'home',  'page_heading' => 'Home', "charity_id" => $charity->id);
             $page_id = DB::table('page')->insertGetId($values);
             $newvalues[0] = array(
                 'page_id' => $page_id,
@@ -87,14 +87,6 @@ class CharitiesController extends Controller
                 'field_title'  => 'Website logo',
                 'field_value' => '',
                 'field_type' => 'file',
-            );
-
-            $newvalues[1] = array(
-                'page_id' => $page_id,
-                'field_key' => 'page_heading',
-                'field_title'  => 'Home',
-                'field_value' => 'home',
-                'field_type' => 'text',
             );
 
             $newvalues[0] = array(
@@ -264,6 +256,26 @@ class CharitiesController extends Controller
             $setting[14]['settings_type'] = "";
             $setting[14]['setting_group'] = "";
             $setting[14]['charity_id'] = $charity->id;
+
+            $setting[15]['setting_title'] = "News letter title";
+            $setting[15]['setting_description'] = "News letter title on home page";
+            $setting[15]['key'] = "news_leter_title";
+            $setting[15]['value'] = "Subscribe Our Newsletter";
+            $setting[15]['settings_name'] = "";
+            $setting[15]['settings_value'] = "";
+            $setting[15]['settings_type'] = "";
+            $setting[15]['setting_group'] = "";
+            $setting[15]['charity_id'] = $charity->id;
+
+            $setting[16]['setting_title'] = "Newsletter Description";
+            $setting[16]['setting_description'] = "Newsletter 2nd line";
+            $setting[16]['key'] = "news_leter_description";
+            $setting[16]['value'] = "Donate Us";
+            $setting[16]['settings_name'] = "";
+            $setting[16]['settings_value'] = "";
+            $setting[16]['settings_type'] = "";
+            $setting[16]['setting_group'] = "";
+            $setting[16]['charity_id'] = $charity->id;
 
 
             $settings = DB::table('settings')->insert($setting);

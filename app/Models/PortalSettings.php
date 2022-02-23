@@ -21,5 +21,8 @@ class PortalSettings extends Model
         'charity_order_email_message',
         'superadmin_email_message',
         'website_notify_email',
+        'facebook_pixel_script',
+        'google_analytics_id',
+        'google_tag_manger_id'
     ];
 }

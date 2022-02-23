@@ -94,11 +94,33 @@ class PortalSettingsController extends Controller
             'charity_order_email_message' => 'required',
             'superadmin_email_message' => 'required',
             'website_notify_email' => 'required|email',
+            'shipping_charges' => 'required'
         ]);
+
+        $google_analytics_id = "";
+        $google_tag_manger_id = "";
+        $facebook_pixel_script = "";
+
         $is_live_worldpay = 0;
         if (isset($_POST['is_live_worldpay'])) {
             $is_live_worldpay = 1;
         }
+
+        if (isset($_POST['google_analytics_id'])) {
+            $google_analytics_id = addslashes(trim($_POST['google_analytics_id']));
+        }
+
+        if (isset($_POST['google_tag_manger_id'])) {
+            $google_tag_manger_id = addslashes(trim($_POST['google_tag_manger_id']));
+        }
+
+
+
+        if (isset($_POST['facebook_pixel_script'])) {
+            $facebook_pixel_script = addslashes(trim($_POST['facebook_pixel_script']));
+        }
+
+
         $data = [
             'testing_worldpay_client_id' => $request->testing_worldpay_client_id,
             'testing_worldpay_secret_key' => $request->testing_worldpay_secret_key,
@@ -110,7 +132,11 @@ class PortalSettingsController extends Controller
             'charity_order_email_message' => $request->charity_order_email_message,
             'superadmin_email_message' => $request->superadmin_email_message,
             'website_notify_email' => $request->website_notify_email,
-            'is_live_worldpay' => $is_live_worldpay
+            'is_live_worldpay' => $is_live_worldpay,
+            'shipping_charges' => $request->shipping_charges,
+            'google_analytics_id' => $google_analytics_id,
+            'google_tag_manger_id' => $google_tag_manger_id,
+            'facebook_pixel_script' => $facebook_pixel_script
         ];
         if ($v->fails()) {
             return redirect()->back()->withErrors($v->errors());

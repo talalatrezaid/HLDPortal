@@ -19,7 +19,7 @@
                                 <h1 style="margin-top:0;margin-bottom:16px;font-size:20px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">Order Completed</h1>
                                 <p style="margin:0;font-size: 12px;">Dear User, {{-- use double space for line break --}}
                                     <br />
-                                    Order # <?php echo $user['order_no'] ?> has been completed.
+                                    Order # <?php echo $user['order_no'] ?> has been completed few days ago.
                                     <br />
 
                                     <?php
