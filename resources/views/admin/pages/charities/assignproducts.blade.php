@@ -28,7 +28,7 @@
                     <b>Charity Name:</b> <?php echo $charity->charity_name; ?>
                 </div>
                 <div class="col-md-6">
-                    <b style="float: right;">Total Products:</b>
+                    <b style="float: right;">Total Products: <b id="total_products"><?php echo count($charity->assignedPRoducts); ?></b></b>
                 </div>
             </div>
 
@@ -58,7 +58,6 @@
                             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                         </div>
 
-
                         <div class="form-group">
                             <label for="exampleInputPassword1">Selected Product</label>
                         </div>
@@ -82,21 +81,13 @@
                             <input type="number" min="1" class="form-control" id="qty" name="qty" value="1" placeholder="123">
                         </div>
                         <div class="alert alert-danger d-none" id="error">
-
                         </div>
-
                         <button type="button" onclick="verify_product_quantity()" class="btn btn-primary">Assign To Charity</button>
                         <div class="loading d-none"><i class="fa fa-spinner fa-spin"></i> please wait...</div>
                     </div>
-
                 </div>
-
-
             </form>
-
-
         </div>
-
 
         <div class="card col-lg-12 p-3">
             <div class="col-lg-12" id="overlay">
@@ -227,6 +218,10 @@
                 if (data.success == 1) {
                     alert(data.message);
                     table.ajax.reload();
+                    $(".js-data-example-ajax").val(null).trigger("change");
+                    $(".js-data-example-ajax").select2("destroy");
+
+                    initSelect2();
 
                 } else {
                     alert(data.message);
@@ -234,24 +229,23 @@
                     window.location.reload();
                 }
             });
-
-
     }
+
+    function setCurrency(item) {
+
+        if (!item.id) {
+
+            return item.text;
+        }
+        var $currency = $('<div class="" data-text="' + item.id + "-" +
+            item.product_variants[0].quantity + '">' + item.text + '</div>');
+        return $currency;
+    };
     $(document).ready(function() {
         //using as it is with this name in function but it's work is to return product data
-        function setCurrency(item) {
 
-            if (!item.id) {
-
-                return item.text;
-            }
-            var $currency = $('<div class="" data-text="' + item.id + "-" +
-                item.product_variants[0].quantity + '">' + item.text + '</div>');
-            return $currency;
-        };
 
         $('.js-data-example-ajax').on("change", function(e) {
-
             var selected_product = ($('.js-data-example-ajax').select2('data')[0]);
             console.log("selected_product", selected_product);
 
@@ -265,8 +259,14 @@
 
 
         });
-        $(".js-data-example-ajax").select2({
 
+        initSelect2();
+
+
+    });
+
+    function initSelect2() {
+        $(".js-data-example-ajax").select2({
             width: 'element',
             ajax: {
                 url: '<?php echo Adminurl('getProuctsForCharity'); ?>',
@@ -297,9 +297,7 @@
                 },
             },
         });
-
-
-    });
+    }
 </script>
 
 

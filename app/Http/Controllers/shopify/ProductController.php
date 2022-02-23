@@ -71,6 +71,7 @@ class ProductController extends Controller
 
             return view('admin.pages.product.index', [
                 'products' => $store_products,
+                "content" => "products",
                 'storefront_categories_count' => $storefront_categories_count
             ]);
         }
@@ -92,6 +93,8 @@ class ProductController extends Controller
 
         return view('admin.pages.product.index', [
             'products' => $store_products,
+            "content" => "products",
+
             'storefront_categories_count' => $storefront_categories_count
         ]);
     }

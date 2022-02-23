@@ -41,7 +41,9 @@ if (request()->segment(1) == env('ADMIN_PREFIX')) {
 
 
         <li class="nav-item">
-          <a href="<?php echo Adminurl('users'); ?>" class="nav-link {{@$child_active1}}">
+          <a href="<?php echo Adminurl('users'); ?>" class="nav-link <?php if ($content == "users") {
+                                                                        echo "active";
+                                                                      } ?>">
             <i class="fas fa-arrow-alt-circle-right nav-icon"></i>
             <p>All Users</p>
           </a>
@@ -49,32 +51,42 @@ if (request()->segment(1) == env('ADMIN_PREFIX')) {
 
 
         <li class="nav-item">
-          <a href="<?php echo Adminurl('charities'); ?>" class="nav-link {{@$child_active1}}">
+          <a href="<?php echo Adminurl('charities'); ?>" class="nav-link <?php if ($content == "charities") {
+                                                                            echo "active";
+                                                                          } ?>">
             <i class="fas fa-hand-holding-heart nav-icon"></i>
             <p>All Charities</p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?php echo Adminurl('products'); ?>" class="nav-link">
+          <a href="<?php echo Adminurl('products'); ?>" class="nav-link <?php if ($content == "products") {
+                                                                          echo "active";
+                                                                        } ?>">
             <i class="nav-icon fa fa-product-hunt"></i>
             <p>Products</p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?php echo Adminurl('store_connection'); ?>" class="nav-link ">
+          <a href="<?php echo Adminurl('store_connection'); ?>" class="nav-link <?php if ($content == "store") {
+                                                                                  echo "active";
+                                                                                } ?>">
             <i class="nav-icon fa fa-link"></i>
             <p>Store Connection</p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?php echo Adminurl('product_categories'); ?>" class="nav-link ">
+          <a href="<?php echo Adminurl('product_categories'); ?>" class="nav-link <?php if ($content == "categories") {
+                                                                                    echo "active";
+                                                                                  } ?>">
             <i class="nav-icon fa fa-list-alt"></i>
             <p>Product Categories</p>
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="<?php echo Adminurl('orders'); ?>" class="nav-link ">
+          <a href="<?php echo Adminurl('orders'); ?>" class="nav-link <?php if ($content == "orders") {
+                                                                        echo "active";
+                                                                      } ?>">
             <i class="nav-icon fa fa-shopping-cart"></i>
             <p>Orders Management</p>
           </a>
@@ -82,7 +94,9 @@ if (request()->segment(1) == env('ADMIN_PREFIX')) {
 
 
         <li class="nav-item">
-          <a href="<?php echo Adminurl('settings'); ?>" class="nav-link ">
+          <a href="<?php echo Adminurl('settings'); ?>" class="nav-link <?php if ($content == "settings") {
+                                                                          echo "active";
+                                                                        } ?>">
             <i class="nav-icon fa fa-gear"></i>
             <p>Settings</p>
           </a>

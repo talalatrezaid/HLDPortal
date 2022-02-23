@@ -38,4 +38,9 @@ class charity extends Model
     {
         return $this->hasMany(Orders::class, 'charity_id', 'id');
     }
+
+    public function assignedPRoducts()
+    {
+        return $this->hasMany(AssignedCharitiesProducts::class, 'charity_id', 'id');
+    }
 }

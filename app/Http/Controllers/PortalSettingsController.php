@@ -24,7 +24,9 @@ class PortalSettingsController extends Controller
         $data = PortalSettings::where("id", 1)->first();
 
         return view('admin.pages.portalsettings.index', [
-            'settings' => $data
+            'settings' => $data,
+            "content" => "settings",
+
         ]);
     }
 

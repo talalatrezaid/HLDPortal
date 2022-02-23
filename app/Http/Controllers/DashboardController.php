@@ -10,7 +10,8 @@ class DashboardController extends Controller
   {
     $data = array();
     $data['users'] = User::count();
-    return view('admin.pages.dashboard.index',$data);
-  }
+    $data["content"] = "dashboard";
 
+    return view('admin.pages.dashboard.index', $data);
+  }
 }

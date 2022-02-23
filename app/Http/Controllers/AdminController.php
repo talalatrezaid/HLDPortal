@@ -112,7 +112,7 @@ class AdminController extends Controller
     $users = DB::table('rezaid_users')
       ->where('id', $user_id)
       ->paginate(10);
-    return view('admin.pages.users.index', ['users' => $users, 'user_roles' => $user_roles]);
+    return view('admin.pages.users.index', ['users' => $users,  "content" => "users", 'user_roles' => $user_roles]);
   }
 
   public function edituser($id)

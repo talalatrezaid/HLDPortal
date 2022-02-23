@@ -38,6 +38,7 @@ class CharitiesController extends Controller
         }
         return view('admin.pages.charities.index', [
             'products' => [],
+            "content" => "charities",
             'storefront_categories_count' => 0
         ]);
     }
@@ -321,13 +322,14 @@ class CharitiesController extends Controller
     public function assignproducts(Request $request, $id)
     {
         //get this charity detail
-        $chrity = charity::where("id", $id)->first();
+        $chrity = charity::where("id", $id)->with("assignedPRoducts")->first();
 
         if (Auth::user() == null) {
             return view('admin.pages.account.login');
         }
         $data['charity_id'] = $id;
         $data['charity'] = $chrity;
+
         return view('admin.pages.charities.assignproducts', $data);
     }
 

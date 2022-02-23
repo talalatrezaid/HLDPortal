@@ -84,6 +84,7 @@ class OrdersController extends Controller
 
         return view('admin.pages.orders.index', [
             'orders' => $aorders,
+            "content" => "orders",
             'charities' => $charities,
             'search_keyword' => $search_keyword,
             'charity' => $charity,

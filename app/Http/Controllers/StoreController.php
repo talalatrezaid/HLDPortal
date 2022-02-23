@@ -17,21 +17,23 @@ class StoreController extends Controller
      * @param null
      * @return null
      */
-    public function show(){
+    public function show()
+    {
 
         // check if user is authenticate and login
-        if (Auth::user() == null){
+        if (Auth::user() == null) {
 
             return view('admin.pages.account.login');
-        }
-        else{
+        } else {
 
             // get store connection data using relationship between User and Store
             $store_data = User::find(Auth::user()->id)->userStores()->get();
 
             // if user already has store data then $store_data may have info array otherwise $store_data is empty and will be treated as new record
             return view('admin.pages.store_connection.index', [
-                'store_data' => $store_data
+                'store_data' => $store_data,
+                "content" => "store",
+
             ]);
         }
     }
@@ -41,7 +43,8 @@ class StoreController extends Controller
      * @param $request
      * @return null
      */
-    public function update( Request $request){
+    public function update(Request $request)
+    {
         $data              = $request->all();
         $validator         = Validator::make($request->all(), [
             'name'         => 'required',
@@ -52,10 +55,10 @@ class StoreController extends Controller
 
         if ($validator->fails()) {
             return redirect('' . env('ADMIN_PREFIX') . '/store_connection')->withErrors($validator);
-        }else{
+        } else {
 
             // if request variable contain store_id means its update request
-            if ($request->store_id){
+            if ($request->store_id) {
 
                 $store_data = Store::find($request->store_id);
                 $store_data->name = $request->name;
@@ -64,10 +67,9 @@ class StoreController extends Controller
                 $store_data->api_domain = $request->api_domain;
                 $store_data->is_active = "0";
                 $store_data->save();
-
             }
             // no store_id in request variable mean its new record request
-            else{
+            else {
 
                 $store_data = new Store;
                 $store_data->user_id = Auth::user()->id;
@@ -82,13 +84,12 @@ class StoreController extends Controller
             // verify the provided information
             $is_varified = $this->verify_connection();
 
-            if ($is_varified){
+            if ($is_varified) {
                 return redirect('' . env('ADMIN_PREFIX') . '/store_connection')->with('store_update', 'Information Successfully Updated');
-            }else{
+            } else {
                 return redirect('' . env('ADMIN_PREFIX') . '/store_connection')->with('invalid_connection', 'Provided information is not valid');
             }
         }
-
     }
 
     /**
@@ -97,7 +98,8 @@ class StoreController extends Controller
      * @param null
      * @return boolean
      */
-    private function verify_connection(){
+    private function verify_connection()
+    {
 
         // get store connection data using relationship between User and Store
         $store_data = User::find(Auth::user()->id)->userStores()->first();
@@ -114,26 +116,23 @@ class StoreController extends Controller
         // endpoint to verify shop
         $api_endpoint = '/shop.json';
 
-        try{
+        try {
 
             // sample url
             //$response = Http::get('https://api_key:api_password@shop.myshopify.com/admin/api/2021-04/shop.json');
 
-            $response = Http::get('https://'.$api_key.':'.$api_password.'@'.$api_domain_name.'/'.$base_url.$api_endpoint);
-            if ($response->successful()){
+            $response = Http::get('https://' . $api_key . ':' . $api_password . '@' . $api_domain_name . '/' . $base_url . $api_endpoint);
+            if ($response->successful()) {
 
                 // connection is verified update status in DB
                 $store_data->is_active = "1";
                 $store_data->save();
 
                 return true;
-
             }
             return false;
-        }
-        catch(\Throwable $e){
+        } catch (\Throwable $e) {
             return false;
         }
-
     }
 }
