@@ -97,7 +97,7 @@
                         <input type="checkbox" class="form-check-input" name="is_live_worldpay" <?php if ($settings->is_live_worldpay == 1) {
                                                                                                     echo "checked='checked'";
                                                                                                 } ?> id="worldpay_check_box">
-                        <label class="form-check-label" for="worldpay_check_box">Use World Pay Live (if checked mean yes)</label>
+                        <label class="form-check-label" for="worldpay_check_box">Use Stripe Live (if checked mean yes)</label>
                     </div>
 
 
@@ -130,7 +130,7 @@
 
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1">Email Address</label>
-                        <input class="form-control" type="email" name="website_notify_email" value="<?php echo $settings->website_notify_email; ?>">
+                        <input class="form-control" type="text" name="website_notify_email" value="<?php echo $settings->website_notify_email; ?>">
                     </div>
 
                     <div class="form-group">
@@ -153,6 +153,75 @@
                         <label for="exampleFormControlTextarea1">Facebook Pixel Code</label>
                         <textarea class="form-control" type="text" name="facebook_pixel_script"><?php echo $settings->facebook_pixel_script; ?></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Welcome Email Message New User Register (For customer email)</label>
+                        <textarea class="form-control" type="text" name="welcome_email_message_user"><?php echo $settings->welcome_email_message_user; ?></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Welcome Email Message New User Register (For charity email)</label>
+                        <textarea class="form-control" type="text" name="welcome_email_message_charity"><?php echo $settings->welcome_email_message_charity; ?></textarea>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Hermes Sandbox Api Url (Sandbox)</label>
+                        <div class="input-group" id="">
+                            <input class="form-control" type="text" name="hermes_api_url_sandbox" value="<?php echo $settings->hermes_api_url_sandbox; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hermes Sandbox Access Token (Sandbox)</label>
+                        <div class="input-group" id="show_hide_hermes_access_token_sandbox">
+                            <input class="form-control" type="password" name="hermes_access_token_sandbox" value="<?php echo $settings->hermes_access_token_sandbox; ?>">
+                            <div class="bg-gray px-2 pt-1 input-group-addon">
+                                <a href=""><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hermes Live Api Url (Live)</label>
+                        <div class="input-group" id="">
+                            <input class="form-control" type="text" name="hermes_api_url_live" value="<?php echo $settings->hermes_api_url_live; ?>" />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Hermes Live Access Token (Live)</label>
+                        <div class="input-group" id="show_hide_hermes_access_token_live">
+                            <input class="form-control" type="password" name="hermes_access_token_live" value="<?php echo $settings->hermes_access_token_live; ?>">
+                            <div class="bg-gray px-2 pt-1 input-group-addon">
+                                <a href=""><i class="fa fa-eye-slash" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" name="is_hermes_live" <?php if ($settings->is_hermes_live == 1) {
+                                                                                                    echo "checked='checked'";
+                                                                                                } ?> id="is_hermes_live">
+                        <label class="form-check-label" for="is_hermes_live">Use Hermes Api Live (if checked mean yes)</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Islamic Relief CRM CSV Profit</label>
+                        <div class="input-group">
+                            <select class="form-control" name="is_include_addional_products">
+                                <option value="1" <?php if ($settings->is_include_addional_products == 1) {
+                                                        echo "selected";
+                                                    } ?>>YES - Include Additional Products Price</option>
+                                <option value="0" <?php if ($settings->is_include_addional_products == 0) {
+                                                        echo "selected";
+                                                    } ?>>NO - Not Include Additional Products Price</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+
                     <button type="submit" class="btn btn-primary">Update</button>
                 </form>
             </div>
@@ -174,7 +243,30 @@
                 $('#show_hide_password i').addClass("fa-eye");
             }
         });
-
+        $("#show_hide_hermes_access_token_sandbox a").on('click', function(event) {
+            event.preventDefault();
+            if ($('#show_hide_hermes_access_token_sandbox input').attr("type") == "text") {
+                $('#show_hide_hermes_access_token_sandbox input').attr('type', 'password');
+                $('#show_hide_hermes_access_token_sandbox i').addClass("fa-eye-slash");
+                $('#show_hide_hermes_access_token_sandbox i').removeClass("fa-eye");
+            } else if ($('#show_hide_hermes_access_token_sandbox input').attr("type") == "password") {
+                $('#show_hide_hermes_access_token_sandbox input').attr('type', 'text');
+                $('#show_hide_hermes_access_token_sandbox i').removeClass("fa-eye-slash");
+                $('#show_hide_hermes_access_token_sandbox i').addClass("fa-eye");
+            }
+        });
+        $("#show_hide_hermes_access_token_live a").on('click', function(event) {
+            event.preventDefault();
+            if ($('#show_hide_hermes_access_token_live input').attr("type") == "text") {
+                $('#show_hide_hermes_access_token_live input').attr('type', 'password');
+                $('#show_hide_hermes_access_token_live i').addClass("fa-eye-slash");
+                $('#show_hide_hermes_access_token_live i').removeClass("fa-eye");
+            } else if ($('#show_hide_hermes_access_token_live input').attr("type") == "password") {
+                $('#show_hide_hermes_access_token_live input').attr('type', 'text');
+                $('#show_hide_hermes_access_token_live i').removeClass("fa-eye-slash");
+                $('#show_hide_hermes_access_token_live i').addClass("fa-eye");
+            }
+        });
         $("#show_hide_password1 a").on('click', function(event) {
             event.preventDefault();
             if ($('#show_hide_password1 input').attr("type") == "text") {

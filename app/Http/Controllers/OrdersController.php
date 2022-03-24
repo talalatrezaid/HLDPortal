@@ -52,19 +52,21 @@ class OrdersController extends Controller
             $status = $request->status;
             if (isset($_POST['from_date'])) {
                 $date_from = $request->from_date;
-                $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
+                if (strlen($date_from) > 0)
+                    $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
             }
             if (isset($_POST['to_date'])) {
                 $date_to = $request->to_date;
-                $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
+                if (strlen($date_to) > 0)
+                    $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
             }
 
 
-            if ($status == "unfullfilled") {
-                $status = "Unfullfilled";
+            if ($status == "unfulfilled") {
+                $status = "Unfulfilled";
             }
 
-            if ($status == "fullfilled") {
+            if ($status == "fulfilled") {
                 $status = "Completed";
             }
         }
@@ -128,11 +130,11 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
 
@@ -229,11 +231,11 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
 
@@ -398,11 +400,11 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
 
@@ -457,9 +459,13 @@ class OrdersController extends Controller
         $worksheet->write(0, 13, "Total Donation");
         $worksheet->write(0, 14, "Grand Total");
         $worksheet->write(0, 15, "Gift Aid");
-        $worksheet->write(0, 16, "Payment Status");
-        $worksheet->write(0, 17, "Order Status");
-        $worksheet->write(0, 18, "Date");
+        $worksheet->write(0, 16, "25% of Total Donation");
+        $worksheet->write(0, 17, "Payment Status");
+        $worksheet->write(0, 18, "Order Status");
+        $worksheet->write(0, 19, "Date");
+        $worksheet->write(0, 20, "Shipping Address");
+        $worksheet->write(0, 21, "Billing Address");
+
 
 
         //list item details sheet header
@@ -539,6 +545,7 @@ class OrdersController extends Controller
             $fullfilment_charges = ($total_charity_products_quanity * $fullfilment_charges_per_unit); // sum after foreach
             $net_total = $total_charity_products_price - $fullfilment_charges;
             $grand_total = $net_total + $donation_total;
+            $donation_total_25_percent = 0.25 * $donation_total;
 
             if ($total_charity_products_quanity > 0) {
                 $worksheet->write($i, 0, $row->id);
@@ -557,13 +564,28 @@ class OrdersController extends Controller
                 $worksheet->write($i, 13, $donation_total);
                 $worksheet->write($i, 14, $grand_total);
                 $gift_add = "NO";
+
                 if ($row->uktaxpayer == 1) {
                     $gift_add = "YES";
+                } else if ($row->uktaxpayer == 2) {
+                    $gift_add = "Not Sure";
                 }
-                $worksheet->write(0, 15, $gift_add);
-                $worksheet->write($i, 16, $row->financial_status);
-                $worksheet->write($i, 17, $row->fulfillment_status);
-                $worksheet->write($i, 18, $row->created_at);
+                $worksheet->write($i, 15, $gift_add);
+                $worksheet->write($i, 16, $donation_total_25_percent);
+                $worksheet->write($i, 17, $row->financial_status);
+
+                if ($row->shipping <> null) {
+                    if (isset($row->shipping[0]->address1))
+                        $worksheet->write($i, 18, $row->shipping[0]->address1);
+                } else {
+                    $worksheet->write($i, 18, "");
+                }
+
+                if ($row->billing <> null)
+                    $worksheet->write($i, 19, $row->billing[0]->address1);
+                else {
+                    $worksheet->write($i, 19, "");
+                }
                 $i++;
             }
         }
@@ -600,13 +622,28 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
+
+
+        if (isset($_GET['from_date'])) {
+            $date_from = $request->from_date;
+            if (strlen($date_from) > 0)
+                $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
+        }
+
+
+        if (isset($_GET['to_date'])) {
+            $date_to = $request->to_date;
+            if (strlen($date_to) > 0)
+                $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
+        }
+
 
         $data['search_keyword'] = $search_keyword;
         $data['charity'] = $charity;
@@ -730,12 +767,26 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
+        }
+
+
+        if (isset($_GET['from_date'])) {
+            $date_from = $request->from_date;
+            if (strlen($date_from) > 0)
+                $date_from = \DateTime::createFromFormat('Y-m-d', $date_from)->format('Y-m-d');
+        }
+
+
+        if (isset($_GET['to_date'])) {
+            $date_to = $request->to_date;
+            if (strlen($date_to) > 0)
+                $date_to = \DateTime::createFromFormat('Y-m-d', $date_to)->format('Y-m-d');
         }
 
         $data['search_keyword'] = $search_keyword;
@@ -920,11 +971,11 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
 
@@ -1052,11 +1103,11 @@ class OrdersController extends Controller
         if (isset($_GET['status']))
             $status = $request->status;
 
-        if ($status == "unfullfilled") {
-            $status = "Unfullfilled";
+        if ($status == "unfulfilled") {
+            $status = "Unfulfilled";
         }
 
-        if ($status == "fullfilled") {
+        if ($status == "fulfilled") {
             $status = "Completed";
         }
 
@@ -1251,13 +1302,12 @@ class OrdersController extends Controller
     {
         //
         if (Auth::user() == null) {
-
             return view('admin.pages.account.login');
         }
 
         $data = Orders::where("id", $id)->with('billing', 'shipping', "payment", "list_items", "fullfilments", "charities")->first();
         return view('admin.pages.orders.detail', [
-            'order' => $data
+            'order' => $data, "content" => "orders"
         ]);
     }
 

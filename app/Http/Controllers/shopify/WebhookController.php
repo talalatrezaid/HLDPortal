@@ -184,6 +184,7 @@ class WebhookController extends Controller
 
         // get event name from shopify request header // product/update, product/create, product/delete
         $hmac_header_topic = $_SERVER['HTTP_X_SHOPIFY_TOPIC'];
+        Log::info(array("Hook Excecuted" => $hmac_header_topic));
 
         /*$fp = fopen('topic.txt', 'w');
         fwrite($fp, $hmac_header_topic);

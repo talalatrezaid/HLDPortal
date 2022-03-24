@@ -95,8 +95,16 @@ class PortalSettingsController extends Controller
             'customer_order_email_message' => 'required',
             'charity_order_email_message' => 'required',
             'superadmin_email_message' => 'required',
-            'website_notify_email' => 'required|email',
-            'shipping_charges' => 'required'
+            'website_notify_email' => 'required',
+            'shipping_charges' => 'required',
+            'welcome_email_message_user' => 'required',
+            'welcome_email_message_charity' => 'required',
+            'hermes_access_token_sandbox' => "required",
+            'hermes_api_url_sandbox' => "required",
+            'hermes_access_token_live' => "required",
+            'hermes_api_url_live' => "required",
+            "is_include_addional_products" => "required"
+
         ]);
 
         $google_analytics_id = "";
@@ -106,6 +114,11 @@ class PortalSettingsController extends Controller
         $is_live_worldpay = 0;
         if (isset($_POST['is_live_worldpay'])) {
             $is_live_worldpay = 1;
+        }
+
+        $is_hermes_live = 0;
+        if (isset($_POST['is_hermes_live'])) {
+            $is_hermes_live = 1;
         }
 
         if (isset($_POST['google_analytics_id'])) {
@@ -138,7 +151,16 @@ class PortalSettingsController extends Controller
             'shipping_charges' => $request->shipping_charges,
             'google_analytics_id' => $google_analytics_id,
             'google_tag_manger_id' => $google_tag_manger_id,
-            'facebook_pixel_script' => $facebook_pixel_script
+            'facebook_pixel_script' => $facebook_pixel_script,
+            'welcome_email_message_user' => $request->welcome_email_message_user,
+            'welcome_email_message_charity' => $request->welcome_email_message_charity,
+            'is_hermes_live' => $is_hermes_live,
+            'hermes_access_token_sandbox' => $request->hermes_access_token_sandbox,
+            'hermes_api_url_sandbox' => $request->hermes_api_url_sandbox,
+            'hermes_access_token_live' => $request->hermes_access_token_live,
+            'hermes_api_url_live' => $request->hermes_api_url_live,
+            "is_include_addional_products" => $request->is_include_addional_products
+
         ];
         if ($v->fails()) {
             return redirect()->back()->withErrors($v->errors());

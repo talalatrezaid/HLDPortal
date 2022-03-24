@@ -68,7 +68,6 @@ class ProductController extends Controller
 
         // If storefront categories are not being added in DB by admin yet then send an empty product array and storefront categories count as we have added conditions based on these
         if ($storefront_categories_count <= 0) {
-
             return view('admin.pages.product.index', [
                 'products' => $store_products,
                 "content" => "products",
@@ -517,7 +516,6 @@ class ProductController extends Controller
 
                             // get storefront category info
                             $storefront_categories = StoreFrontCategory::find($single_mapped_storefront_category['store_front_category_id'])->toArray();
-
                             // prepare array to push in $categories_mapped_with_fhg
                             $category_mapped_with_fhg = array(
                                 //'product_category_id' => $single_mapped_category['id'],
@@ -578,6 +576,7 @@ class ProductController extends Controller
             'product_categories' => $categories,
             'storefront_categories' => array_unique($storefront_mapped_categories, SORT_REGULAR),
             'variant_meta_data' => $filtered_variant_meta,
+            "content" => "products",
             'countries_list' => $countries_array,
         ]);
     }

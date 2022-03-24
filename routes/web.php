@@ -15,8 +15,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\PortalSettingsController;
+use App\Http\Controllers\ShippingWeightSlotsController;
 use App\Models\Orders\Orders;
 use App\Models\PortalSettings;
+use App\Models\ShippingWeightSlots;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,8 +97,10 @@ Route::group([
     Route::get('/exportordersAdditionalProducts', [OrdersController::class, 'exportordersAdditionalProducts']); //create order
     Route::get('/exportordersForHermes', [OrdersController::class, 'exportordersForHermes']); //create order
 
+    Route::post('/updateSlot', [ShippingWeightSlotsController::class, "updateSlot"])->name("updateSlot"); //create order
+    Route::post('/updateShippingFreeAmount', [ShippingWeightSlotsController::class, "updateShippingFreeAmount"])->name("updateShippingFreeAmount"); //create order
 
-
+    Route::resource('/shippingslots', ShippingWeightSlotsController::class); //create order
     Route::resource('/settings', PortalSettingsController::class); //create order
     Route::get('/notificationscount', [NotificationsController::class, "notifications_count"]); //create order
     Route::get('/notifications', [NotificationsController::class, "index"]); //create order

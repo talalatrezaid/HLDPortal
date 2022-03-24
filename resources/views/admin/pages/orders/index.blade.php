@@ -146,8 +146,8 @@
                         <div class="col-md-2"><label>Status</label><br />
                             <select class="form-control abc" name="status">
                                 <option value="" <?php if ($status == "") echo "selected"; ?>>Please Select</option>
-                                <option <?php if ($status == "unfullfilled") echo "selected"; ?> value="unfullfilled">Pending</option>
-                                <option <?php if ($status == "fullfilled") echo "selected"; ?> value="fullfilled">Complete</option>
+                                <option <?php if ($status == "unfulfilled") echo "selected"; ?> value="unfulfilled">Pending</option>
+                                <option <?php if ($status == "fulfilled") echo "selected"; ?> value="fulfilled">Complete</option>
                             </select>
                         </div>
                     </div>
@@ -211,7 +211,7 @@
                                 {{-- </td>--}}
                                 <td class="product_name_data">{{$product->id}}
                                     <br />
-                                    {{$product->created_at}}
+                                    <?php echo date('d/m/Y h:m:a', strtotime($product->created_at)) ?>
                                 </td>
                                 <td>{{$product->name ?? ''}}</td>
                                 <td>£{{$product->total_price ?? '0'}}
@@ -237,11 +237,11 @@
                                 </td>
                                 <td>
                                     <?php
-                                    if (strtolower($product->fulfillment_status) == "fullfilled" || strtolower($product->fulfillment_status) == "completed") {
+                                    if (strtolower($product->fulfillment_status) == "fulfilled" || strtolower($product->fulfillment_status) == "completed") {
                                     ?>
                                         <span class="badge badge-sm badge-success">Completed</span>
                                     <?php
-                                    } else if (strtolower($product->fulfillment_status) == "unfullfilled") {
+                                    } else if (strtolower($product->fulfillment_status) == "unfulfilled") {
                                     ?>
                                         <span class="badge badge-sm badge-danger">Pending</span>
                                     <?php } ?>
@@ -299,7 +299,7 @@
     <?php } ?>
 </script>
 
-<script>
+<!-- <script>
     // Start product syncing process
     $(document).on('click', '#sync_products', function() {
 
@@ -347,7 +347,7 @@
 
 
     });
-</script>
+</script> -->
 
 <script>
     $(document).on('click', '.upload_product_to_storefront', function() {

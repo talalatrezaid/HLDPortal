@@ -23,6 +23,14 @@ class PortalSettings extends Model
         'website_notify_email',
         'facebook_pixel_script',
         'google_analytics_id',
-        'google_tag_manger_id'
+        'google_tag_manger_id',
+        "shipping_charges",
+        "welcome_email_message_user",
+        "welcome_email_message_charity",
+        "hermes_access_token_sandbox",
+        "hermes_api_url_sandbox",
+        "hermes_access_token_live",
+        "hermes_api_url_live",
+        "is_hermes_live",
     ];
 }

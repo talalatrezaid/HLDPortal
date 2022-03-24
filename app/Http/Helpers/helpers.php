@@ -156,13 +156,25 @@ function getMagentoAuthToken($base_url, $username, $password)
 
 function write_product_image($product_id, $variantId)
 {
-  //get local product id of variant id
-  $variant = ProductVariant::where("variantId", $variantId)->first();
-  //check if i can write queury here
-  $picture = ProductImage::select("source")->where("product_id", $variant->product_id)->first();
-  if (isset($picture['source']))
-    return $picture['source'];
-  else
+
+  if ($variantId == null ||  $variantId == "") {
+    $variant = ProductVariant::where("product_id", $product_id)->first();
+    //$variantId = $variantId->id;
+    //get local product id of variant id
+    //$variant = ProductVariant::where("variantId", $variantId)->first();
+    //check if i can write queury here
+
+  }
+
+  $picture = ProductImage::select("source")->where("product_id", $product_id)->first();
+  if (isset($picture['source'])) {
+    if (strlen($picture['source']) > 0) {
+
+      return $picture['source'];
+    } else {
+      return "no image";
+    }
+  } else
     return "no image";
 }
 

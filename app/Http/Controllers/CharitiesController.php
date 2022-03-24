@@ -329,6 +329,7 @@ class CharitiesController extends Controller
         }
         $data['charity_id'] = $id;
         $data['charity'] = $chrity;
+        $data['content'] = "charities";
 
         return view('admin.pages.charities.assignproducts', $data);
     }
@@ -676,6 +677,8 @@ class CharitiesController extends Controller
             return redirect('' . env('ADMIN_PREFIX') . '/users')->with('add_user_faliure', "You don't have the permission to add a User!");
         $data = array();
         $data['user_roles'] = DB::table('user_roles')->get();
+        $data['content'] = "charities";
+
         return view('admin.pages.charities.create', $data);
     }
 

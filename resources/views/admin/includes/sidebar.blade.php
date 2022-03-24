@@ -103,6 +103,15 @@ if (request()->segment(1) == env('ADMIN_PREFIX')) {
         </li>
 
         <li class="nav-item">
+          <a href="<?php echo Adminurl('shippingslots'); ?>" class="nav-link <?php if ($content == "shippingslots") {
+                                                                                echo "active";
+                                                                              } ?>">
+            <i class="nav-icon fa fa-truck"></i>
+            <p>Shipping Slots</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a href="<?php echo Adminurl('logout'); ?>" class="nav-link"> <i class="nav-icon fas fa-power-off"></i> &nbsp;<P>Logout</P> </a>
         </li>
       </ul>

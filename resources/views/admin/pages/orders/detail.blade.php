@@ -535,16 +535,44 @@
                                 </div>
 
 
-                                <div class="first_right_billing_address_view p-3">
+                                <div class="first_right_billing_address_view">
                                     <div class="row mt-3">
                                         <div class="col-12 col-sm-7 text-grey-d2 text-95 mt-2 mt-lg-0">
                                             <span>Stripe</span>
                                         </div>
-                                        <div class="col-12text-grey-d2 text-95 mt-2 mt-lg-0">
+                                        <div class="col-12 p-3 text-grey-d2 text-95 mt-2 mt-lg-0">
                                             <?php
                                             //calling helper function here
                                             write_payment_detail($order->id);
                                             ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="first_right_billing_address_view">
+                                    <div class="row mt-3">
+                                        <div class="col-12 col-sm-7 text-grey-d2 text-95 mt-2 mt-lg-0">
+                                            <span>Hermes</span>
+                                        </div>
+                                        <div class="col-12 p-3 text-grey-d2 text-95  mt-2 mt-lg-0">
+                                            <b>Message:</b>
+                                            <br />
+                                            <?php
+                                            echo $order->hermes_response;
+                                            ?>
+                                            <br />
+                                            <b>Barcode:</b>
+                                            <?php
+                                            if ($order->is_hermes_error == 1) {
+                                            ?>
+                                                -
+                                            <?php
+                                            } else if ($order->is_hermes_error == 0 && $order->is_hermes_success = 1) {
+                                                echo $order->hermes_barcode;
+                                            }
+                                            ?>
+
                                         </div>
                                     </div>
                                 </div>
